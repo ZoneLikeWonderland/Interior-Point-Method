@@ -1,8 +1,9 @@
 solution of CPLEX solver in AMPL:
 
+CPLEX 12.10.0.0: baropt
 CPLEX 12.10.0.0: optimal solution; objective 196200
-5 dual simplex iterations (0 in phase I)
-
+6 barrier iterations
+1 push, 0 exchange dual crossover iterations
 Cost = 196200
 
 x [*] :=  
