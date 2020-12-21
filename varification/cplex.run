@@ -1,0 +1,5 @@
+model cplex.mod ;
+data cplex.dat ;
+option solver cplex ;
+solve;
+display Cost,x;
