@@ -6,9 +6,14 @@ import scipy.io
 def read_data(data_folder_or_path):
     if data_folder_or_path.endswith(".mat"):
         f = scipy.io.loadmat(data_folder_or_path)
-        A = f["Problem"][0][0][2].todense()
-        b = f["Problem"][0][0][3]
-        c = f["Problem"][0][0][4]
+        try:
+            A = f["Problem"]["A"][0][0].todense()
+            b = f["Problem"]["b"][0][0]
+            c = f["Problem"]["c"][0][0]
+        except:
+            A = f["A"].todense()
+            b = f["b"]
+            c = f["c"]
         x_star = None
     else:
         A, b, c, x_star = [
@@ -26,8 +31,8 @@ def read_data(data_folder_or_path):
 
 
 if __name__ == "__main__":
-    A, b, c, x = read_data("data/LP_MATLAB/lpi_galenet.mat")
-    print(A)
-    print(b)
-    print(c)
-    print(x)
+    A, b, c, x = read_data("data/LP_MATLAB/afiro.mat")
+    # print(A)
+    # print(b)
+    # print(c)
+    # print(x)
