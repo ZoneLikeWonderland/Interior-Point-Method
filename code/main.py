@@ -6,7 +6,7 @@ import time
 style.use("ggplot")
 
 
-def IPM(A, b, c):
+def IPM(A, b, c, detail=False):
 
     def f_primal(x):
         return c.T.dot(x)
@@ -59,37 +59,51 @@ def IPM(A, b, c):
     x_k, lam_k, s_k = init_iterate()
 
     eps = 1e-9
-    gamma = 0.99
+    gamma = 0.9
     c1 = 1e-4
 
     time_cost["init"] += time.time()-start
 
     F_k = F(x_k, lam_k, s_k)
-    print(
-        "k=-1",
-        "f(x) = {:5.2f},".format(f_primal(x_k).item()),
-        "|F(x)_d| = {:5.10f},".format(np.linalg.norm(F_k[0:n], np.inf)),
-        "|F(x)_p| = {:5.10f},".format(np.linalg.norm(F_k[n:n+m], np.inf)),
-        "|F(x)_0| = {:5.10f},".format(np.linalg.norm(F_k[n+m:n+m+n], np.inf)),
-    )
+    if detail:
+        print(
+            "k=-1",
+            "f(x) = {:5.2f},".format(f_primal(x_k).item()),
+            "|F(x)_d| = {:5.10f},".format(np.linalg.norm(F_k[0:n], np.inf)),
+            "|F(x)_p| = {:5.10f},".format(np.linalg.norm(F_k[n:n+m], np.inf)),
+            "|F(x)_0| = {:5.10f},".format(np.linalg.norm(F_k[n+m:n+m+n], np.inf)),
+        )
     for k in range(1000):
         start = time.time()
-        gF_k = gF(x_k, lam_k, s_k)
+        # gF_k = gF(x_k, lam_k, s_k)
         F_k = F(x_k, lam_k, s_k)
 
         time_cost["gF&F"] += time.time()-start
         start = time.time()
 
-        rhs = -F_k
         mu = x_k.T.dot(s_k)
         sigma = 0.01
-        rhs[n+m:n+m+n] += mu*sigma/n
-        dz_k, resdual, rank, singular = np.linalg.lstsq(gF_k.T, rhs)
+        toler = mu*sigma/n
+        if False:
+            rhs = -F_k
+            rhs[n+m:n+m+n] += toler
 
-        dx_k = dz_k[0:n]
-        dlam_k = dz_k[n:n+m]
-        ds_k = dz_k[n+m:n+m+n]
+            dz_k, resdual, rank, singular = np.linalg.lstsq(gF_k.T, rhs)
+            dx_k = dz_k[0:n]
+            dlam_k = dz_k[n:n+m]
+            ds_k = dz_k[n+m:n+m+n]
 
+        F_d = F_k[0:n]
+        F_p = F_k[n:n+m]
+        F_0 = F_k[n+m:n+m+n]-toler
+
+        XS_inv = np.diag(np.multiply(x_k, 1/s_k).flat)
+        S_invF_0 = F_0/s_k
+        AXS_inv = A.dot(XS_inv)
+        dlam_k = np.linalg.solve(AXS_inv.dot(A.T), -F_p-AXS_inv.dot(F_d)+A.dot(S_invF_0))
+        ds_k = -F_d-A.T.dot(dlam_k)
+        dx_k = -S_invF_0-XS_inv.dot(ds_k)
+        dz_k = np.vstack((dx_k, dlam_k, ds_k))
         time_cost["solve"] += time.time()-start
         start = time.time()
 
@@ -98,7 +112,7 @@ def IPM(A, b, c):
         while (x_k+alpha*dx_k < 0).any() or (s_k+alpha*ds_k < 0).any():
             alpha *= gamma
 
-        # while (F(x_k+alpha*dx_k, lam_k, s_k+alpha*ds_k < 0) >= F_k+c1*alpha*dz_k.T.dot(dz_k)).all():
+        # while (F(x_k+alpha*dx_k, lam_k, s_k+alpha*ds_k < 0) >= F_k+c1*alpha*dz_k.T.dot(dz_k)).any():
         #     alpha *= gamma
 
         time_cost["line"] += time.time()-start
@@ -111,24 +125,28 @@ def IPM(A, b, c):
         time_cost["update"] += time.time()-start
         start = time.time()
 
-        print(
-            "k={:4d},".format(k),
-            "f(x) = {:5.2f},".format(f_primal(x_k).item()),
-            "|dz_d| = {:5.10f},".format(np.linalg.norm(dz_k[0:n], np.inf)),
-            "|dz_p| = {:5.10f},".format(np.linalg.norm(dz_k[n:n+m], np.inf)),
-            "|dz_0| = {:5.10f},".format(np.linalg.norm(dz_k[n+m:n+m+n], np.inf)),
-            "|F(x)_d| = {:5.10f},".format(np.linalg.norm(F_k[0:n], np.inf)),
-            "|F(x)_p| = {:5.10f},".format(np.linalg.norm(F_k[n:n+m], np.inf)),
-            "|F(x)_0| = {:5.10f},".format(np.linalg.norm(F_k[n+m:n+m+n], np.inf)),
-            "alpha = {:f},".format(alpha)
-        )
+        if detail:
+            print(
+                "k={:4d},".format(k),
+                "f(x) = {:5.2f},".format(f_primal(x_k).item()),
+                "|dz_d| = {:5.10f},".format(np.linalg.norm(dz_k[0:n], np.inf)),
+                "|dz_p| = {:5.10f},".format(np.linalg.norm(dz_k[n:n+m], np.inf)),
+                "|dz_0| = {:5.10f},".format(np.linalg.norm(dz_k[n+m:n+m+n], np.inf)),
+                "|F(x)_d| = {:5.10f},".format(np.linalg.norm(F_k[0:n], np.inf)),
+                "|F(x)_p| = {:5.10f},".format(np.linalg.norm(F_k[n:n+m], np.inf)),
+                "|F(x)_0| = {:5.10f},".format(np.linalg.norm(F_k[n+m:n+m+n], np.inf)),
+                "alpha = {:f},".format(alpha)
+            )
 
         if np.linalg.norm(F_k, np.inf) < eps:
             break
 
-    print(time_cost)
+    total_time = sum([i for _, i in time_cost.items()])
+    if detail:
+        print(time_cost)
+        print("total time", total_time)
 
-    return x_k
+    return x_k, total_time
 
 
 if __name__ == "__main__":
@@ -137,4 +155,8 @@ if __name__ == "__main__":
     A = A[:-1]
     b = b[:-1]
 
-    IPM(A, b, c)
+    t = 0
+    for i in range(100):
+        x, tc = IPM(A, b, c, detail=i == 0)
+        t += tc
+    print("avg time", t/100)
