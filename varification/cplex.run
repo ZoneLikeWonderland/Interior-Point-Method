@@ -1,0 +1,6 @@
+model cplex.mod ;
+data cplex.dat ;
+option solver cplex;
+option cplex_options 'baropt';
+solve;
+display Cost,x;
