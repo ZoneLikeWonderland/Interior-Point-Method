@@ -1,5 +1,6 @@
+reset;
 model cplex.mod ;
-data cplex.dat ;
+data  data/beaconfd.dat ;
 option solver cplex;
 option cplex_options 'baropt';
 solve;
