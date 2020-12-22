@@ -227,10 +227,10 @@ if __name__ == "__main__":
     #     t +=tc
     # print("avg time", t/TIMES)
 
-    # A, b, c, x_star = read_data(r"data/LP_MATLAB\e226.mat")
-    # # A, b, c, x_star = read_data(r"data/LP_MATLAB\adlittle.mat")
-    # x, tgt, res, tc, status = IPM(A, b, c, detail=True)
-    # exit()
+    A, b, c, x_star = read_data(r"data/LP_MATLAB\lotfi.mat")
+    # A, b, c, x_star = read_data(r"data/LP_MATLAB\adlittle.mat")
+    x, tgt, res, tc, status = IPM(A, b, c, detail=True)
+    exit()
 
     for path in glob.glob("data/LP_MATLAB/*.mat"):
         print("try", path)

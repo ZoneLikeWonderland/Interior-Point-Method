@@ -1,7 +1,0 @@
-reset;
-model cplex.mod ;
-data  data/beaconfd.dat ;
-option solver cplex;
-option cplex_options 'baropt';
-solve;
-display Cost,x;

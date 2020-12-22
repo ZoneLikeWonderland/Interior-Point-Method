@@ -9,7 +9,6 @@ style.use("ggplot")
 
 
 def IPM(A, b, c, detail=False):
-
     def f_primal(x):
         return c.T.dot(x)
 
@@ -82,7 +81,7 @@ def IPM(A, b, c, detail=False):
         )
         old_dz_k = np.zeros((n+m+n, 1))
 
-    for k in range(500):
+    for k in range(5000):
         start = time.time()
         gF_k = gF(x_k, lam_k, s_k)
         F_k = F(x_k, lam_k, s_k)
@@ -112,6 +111,20 @@ def IPM(A, b, c, detail=False):
         dlam_k, _, _, _ = np.linalg.lstsq(AXS_inv.dot(A.T), -F_p-AXS_inv.dot(F_d)+A.dot(S_invF_0), rcond=None)
         ds_k = -F_d-A.T.dot(dlam_k)
         dx_k = -S_invF_0-XS_inv.dot(ds_k)
+
+        # p1_y, _, _, _ = np.linalg.lstsq(AXS_inv.dot(A.T), -b , rcond=None)
+        # p1_s = -A.T.dot(p1_y)
+        # p1_x = x_k-XS_inv.dot(p1_s)
+        # p2_y, _, _, _ = np.linalg.lstsq(AXS_inv.dot(A.T), -A.dot(1/s_k) , rcond=None)
+        # p2_s = -A.T.dot(p2_y)
+        # p2_x = 1/s_k-XS_inv.dot(p2_s)
+
+        # ds_k = p2_s*toler - p1_s
+        # dx_k = p2_x*toler - p1_x
+        # dlam_k = p2_y*toler - p1_y
+
+
+
         dz_k = np.vstack((dx_k, dlam_k, ds_k))
         time_cost["solve"] += time.time()-start
         start = time.time()
@@ -121,12 +134,22 @@ def IPM(A, b, c, detail=False):
         alpha = min(min(np.min((-x_k/dx_k)[np.where(dx_k < 0)]), np.min((-s_k/ds_k)[np.where(ds_k < 0)]))*0.9, 1)
 
         alpha_t = alpha
-        while np.linalg.norm(F(x_k+alpha*dx_k, lam_k+alpha*dlam_k, s_k+alpha*ds_k), np.inf) >= np.linalg.norm(F_k+c1*alpha*gF_k.T.dot(dz_k), np.inf):
+
+        # while np.linalg.norm(F(x_k+alpha*dx_k, lam_k+alpha*dlam_k, s_k+alpha*ds_k), np.inf) >= np.linalg.norm(F_k+c1*alpha*gF_k.T.dot(dz_k), np.inf):
+        #     alpha *= gamma
+        #     if alpha*gamma == 0:
+        #         print("WARNING: alpha=0")
+        #         break
+        #     if (x_k+alpha*dx_k).T.dot(s_k+alpha*ds_k) < 0.1*mu:
+        #         print("WARNING: too small")
+        #         break
+
+        while True:
             alpha *= gamma
             if alpha*gamma == 0:
                 print("WARNING: alpha=0")
                 break
-            if (x_k+alpha*dx_k).T.dot(s_k+alpha*ds_k) < gamma*mu:
+            if (x_k+alpha*dx_k).T.dot(s_k+alpha*ds_k) < 0.1*mu:
                 print("WARNING: too small")
                 break
 
@@ -166,7 +189,8 @@ def IPM(A, b, c, detail=False):
             raise Exception("FAILED to solve: update delta=0")
         if np.linalg.norm(dz_k, np.inf) > 1e31:
             raise Exception("FAILED to solve: update delta exploded")
-        if np.linalg.norm(alpha*dz_k, np.inf) < eps:
+        if np.linalg.norm(alpha*dz_k, np.inf) < 1e-30*eps:
+            print(np.linalg.norm(alpha*dz_k, np.inf))
             print("WARNING: predicted cannot converge")
             status = "HARD"
             break
@@ -192,15 +216,15 @@ if __name__ == "__main__":
     #     t += tc
     # print("avg time", t/TIMES)
 
-    # A, b, c, x_star = read_data(r"data/LP_MATLAB\beaconfd.mat")
-    # x, tc, status = IPM(A, b, c, detail=True)
-    # exit()
+    A, b, c, x_star = read_data(r"data/LP_MATLAB\beaconfd.mat")
+    x, tc, status = IPM(A, b, c, detail=True)
+    exit()
 
-    for path in glob.glob("data/LP_MATLAB/*.mat"):
-        print("try", path)
-        A, b, c, x_star = read_data(path)
-        try:
-            x, tgt, res, tc, status = IPM(A, b, c, detail=False)
-            print("\t"*4, status, tgt, res)
-        except Exception as e:
-            print(e)
+    # for path in glob.glob("data/LP_MATLAB/*.mat"):
+    #     print("try", path)
+    #     A, b, c, x_star = read_data(path)
+    #     try:
+    #         x, tgt, res, tc, status = IPM(A, b, c, detail=False)
+    #         print("\t"*4, status, tgt, res)
+    #     except Exception as e:
+    #         print(e)
