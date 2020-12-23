@@ -28,7 +28,8 @@ template <class DataType> class IPM {
     Vec dx_k, dlam_k, ds_k;
     Vec F_d, F_p, F_0;
     DataType alpha_p, alpha_d;
-    enum Status { TBD, DONE, HARD };
+    enum Status { TBD, DONE, HARD, EXPIRED };
+    string status_str[4] = {"TBD", "DONE", "HARD", "EXPIRED"};
 
   public:
     auto read_file(string path) {
@@ -52,22 +53,22 @@ template <class DataType> class IPM {
         return map_matrix;
     }
 
-    DataType f_primal(Vec x) { return (x.transpose() * c).value(); }
+    DataType f_primal(const Vec &x) { return (x.transpose() * c).value(); }
 
-    auto F(Vec x, Vec lam, Vec s) {
+    auto F(const Vec &x, const Vec &lam, const Vec &s) {
         Vec ret(n + m + n, 1);
         ret << A.transpose() * lam + s - c, A * x - b, x.array() * s.array();
         return ret;
     }
 
-    auto gF(Vec x, Vec lam, Vec s) {
-        Mat g = Mat::Zero(n + m + n, n + m + n);
-        g.block(0, n, n, m) = A.transpose();
-        g.block(n, 0, m, n) = A;
-        g.block(n + m, 0, n, n) = Mat::Identity(n, n);
-        g.block(0, n + m, n, n) = DiagonalMatrix<DataType, -1>(s);
-        g.block(n + m, n + m, n, n) = DiagonalMatrix<DataType, -1>(x);
-        return g;
+    auto gF(const Vec &x, const Vec &lam, const Vec &s) {
+        for (int i = 0; i < n; i++) {
+            gF_k(i, n + m + i) = s(i, 0);
+            gF_k(n + m + i, n + m + i) = x(i, 0);
+        }
+        // gF_k.block(0, n + m, n, n) = DiagonalMatrix<DataType, -1>(s);
+        // gF_k.block(n + m, n + m, n, n) = DiagonalMatrix<DataType, -1>(x);
+        // return Ref<Mat>(_g);
     }
 
     tuple<Vec, Vec, Vec> init_iterate() {
@@ -107,43 +108,40 @@ template <class DataType> class IPM {
         return {x_0, lam_0, s_0};
     }
 
-    auto set_Abc(Mat A, Vec b, Vec c) {
+    auto init(const Mat &A, const Vec &b, const Vec &c) {
         this->A = A;
         this->b = b;
         this->c = c;
         m = A.rows();
         n = A.cols();
+
+        gF_k = Mat::Zero(n + m + n, n + m + n);
+        gF_k.block(0, n, n, m) = A.transpose();
+        gF_k.block(n, 0, m, n) = A;
+        gF_k.block(n + m, 0, n, n) = Mat::Identity(n, n);
     }
 
-    tuple<Vec, Vec, Vec> solve_newton(Vec F_d, Vec F_p, Vec F_0) {
+    tuple<Vec, Vec, Vec> solve_newton(const Vec &F_d, const Vec &F_p,
+                                      const Vec &F_0) {
         auto XS_inv =
             DiagonalMatrix<DataType, -1>((x_k.array() / s_k.array()).matrix());
-        // cout << x_k.array() / s_k.array() << "\n";
-        // cout << XS_inv << "\n";
         auto S_invF_0 = (F_0.array() / s_k.array()).matrix();
         auto AXS_inv = A * XS_inv;
-        // dlam_k, _, _,
-        //     _ = np.linalg.lstsq(AXS_inv.dot(A.T),
-        //                         -F_p - AXS_inv.dot(F_d) + A.dot(S_invF_0),
-        //                         rcond = -1);
         Vec dlam_k = (AXS_inv * A.transpose())
                          .colPivHouseholderQr()
                          .solve(-F_p - AXS_inv * F_d + A * S_invF_0);
         Vec ds_k = -F_d - A.transpose() * dlam_k;
         Vec dx_k = -S_invF_0 - XS_inv * ds_k;
-        // auto dz_k = np.vstack((dx_k, dlam_k, ds_k));
         return {dx_k, dlam_k, ds_k};
-        // return dx_k, dlam_k, ds_k, dz_k;
-        // return {};
     }
 
-    auto maximum_alpha(Vec _k, Vec d_k) {
+    auto maximum_alpha(const Vec &_k, const Vec &d_k) {
         auto select = d_k.array() < 0;
-        _k = select.select(_k, 1);
-        d_k = select.select(-d_k, 0);
-        DataType alpha =
-            min((DataType)((_k.array() / d_k.array()).minCoeff()), 1.) *
-            (1 - eps);
+        DataType alpha = min((DataType)((select.select(_k, 1).array() /
+                                         select.select(-d_k, 0).array())
+                                            .minCoeff()),
+                             1.) *
+                         (1 - eps);
         if (!isnormal(alpha)) {
             cout << "maximum_alpha fail\n";
             exit(-1);
@@ -161,48 +159,23 @@ template <class DataType> class IPM {
         tie(x_k, lam_k, s_k) = init_iterate();
         TIMER_RECORD(init);
 
-        // cout << x_k << "\n";
-        // cout << lam_k << "\n";
-        // cout << s_k << "\n";
-
-        // if (detail) {
-        //     F_k = F(x_k, lam_k, s_k);
-        //     F_d = F_k.block(0, 0, n, 1);
-        //     F_p = F_k.block(n, 0, m, 1);
-        //     F_0 = F_k.block(n + m, 0, n, 1);
-        //     printf("k= -1"
-        //            "f(x)=%5.2f,"
-        //            "|F(x)_d|=%.3e,"
-        //            "|F(x)_p|=%.3e,"
-        //            "|F(x)_0|=%.3e,",
-        //            f_primal(x_k), F_d.template lpNorm<Infinity>(),
-        //            F_p.template lpNorm<Infinity>(),
-        //            F_0.template lpNorm<Infinity>());
-        // }
-        // cout << F_k << "\n";
-
         for (int k = 1; k <= 500; k++) {
             TIMER_START(calF);
-            gF_k = gF(x_k, lam_k, s_k);
             F_k = F(x_k, lam_k, s_k);
             TIMER_RECORD(calF);
+            TIMER_START(calgF);
+            gF(x_k, lam_k, s_k);
+            TIMER_RECORD(calgF);
 
-            // cout << F_k.rows() << " " << n << " " << m << "\n";
-
-            // time_cost["gF&F"] += time.time()-start
-            // start = time.time()
-            // cout << F_k.rows() << " " << F_k.cols() << "\n";
             TIMER_START(solve);
             F_d = F_k.block(0, 0, n, 1);
             F_p = F_k.block(n, 0, m, 1);
             F_0 = F_k.block(n + m, 0, n, 1);
-            // cout << F_k << "\n";
 
             tie(dx_k, dlam_k, ds_k) = solve_newton(F_d, F_p, F_0);
 
             alpha_p = maximum_alpha(x_k, dx_k);
             alpha_d = maximum_alpha(s_k, ds_k);
-            // cout << alpha_p << " " << alpha_d << "\n";
 
             auto mu = (x_k.transpose() * s_k).value() / n;
             auto sigma =
@@ -220,7 +193,6 @@ template <class DataType> class IPM {
             alpha_p = maximum_alpha(x_k, dx_k);
             alpha_d = maximum_alpha(s_k, ds_k);
             TIMER_RECORD(solve);
-            // cout << alpha_p << " " << alpha_d << "\n";
 
             TIMER_START(search);
 
@@ -229,14 +201,7 @@ template <class DataType> class IPM {
                                   .maxCoeff()) <= gamma * mu) {
                 alpha_p *= gamma;
                 alpha_d *= gamma;
-                if (alpha_d < eps * eps and alpha_p < eps * eps) {
-                    cout << "WARNING: alpha too small\n";
-                    break;
-                }
-                if (alpha_p * gamma == 0 or alpha_d * gamma == 0) {
-                    cout << "WARNING: alpha=0\n";
-                    break;
-                }
+                if (alpha_d < eps * eps and alpha_p < eps * eps) { break; }
             }
 
             Vec dz_k(n + m + n, 1);
@@ -250,14 +215,7 @@ template <class DataType> class IPM {
                 alpha_p *= gamma;
                 alpha_d *= gamma;
                 desc *= gamma;
-                if (alpha_d < eps * eps and alpha_p < eps * eps) {
-                    cout << "WARNING: alpha too small\n";
-                    break;
-                }
-                if (alpha_p * gamma == 0 or alpha_d * gamma == 0) {
-                    cout << "WARNING: alpha=0\n";
-                    break;
-                }
+                if (alpha_d < eps * eps and alpha_p < eps * eps) { break; }
             }
 
             TIMER_RECORD(search);
@@ -273,7 +231,7 @@ template <class DataType> class IPM {
                        "|F(x)_0|=%.3e,"
                        "alpha_p=%.3e,"
                        "alpha_d=%.3e,"
-                    //    "dot_x=%.5e"
+                       //    "dot_x=%.5e"
                        "\n",
                        k, f_primal(x_k), dx_k.template lpNorm<Infinity>(),
                        dlam_k.template lpNorm<Infinity>(),
@@ -281,7 +239,6 @@ template <class DataType> class IPM {
                        F_d.template lpNorm<Infinity>(),
                        F_p.template lpNorm<Infinity>(),
                        F_0.template lpNorm<Infinity>(), alpha_p, alpha_d);
-                // cout << x_k << "\n";
             }
 
             if (F_k.template lpNorm<Infinity>() < eps) {
@@ -289,8 +246,6 @@ template <class DataType> class IPM {
                 break;
             }
 
-            // if np.linalg.norm(dz_k, 1) == 0:
-            //     raise Exception("FAILED to solve: update delta=0")
             if (dz_k.template lpNorm<Infinity>() > 1e31) {
                 cout << "FAILED to solve: update delta exploded\n";
                 exit(-1);
@@ -313,17 +268,24 @@ template <class DataType> class IPM {
             TIMER_RECORD(update);
         }
 
+        if (status == TBD) { status = EXPIRED; }
+
         auto total_wall_time_cost =
             (chrono::steady_clock::now() - total_start_time).count();
         cout << "total_wall_time_cost = " << total_wall_time_cost / 1e9 << "\n";
+        double total_time_cost = 0;
         for (auto item : time_cost) {
             cout << item.first << ":" << item.second << "\n";
+            total_time_cost += item.second;
         }
+        cout << "total_time_cost = " << total_time_cost << "\n";
+        cout << "status = " << status_str[status] << " tgt = " << f_primal(x_k)
+             << " |F(x_k)| = " << F_k.template lpNorm<Infinity>() << "\n";
     }
 };
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc < 2) {
         cout << "usage: " << argv[0] << " <data_folder>\n";
         exit(-1);
     }
@@ -331,13 +293,16 @@ int main(int argc, char *argv[]) {
     if (folder[folder.size() - 1] == '/')
         folder = folder.substr(0, folder.size() - 1);
 
+    auto detail = false;
+    if (argc > 2 and string(argv[2]) == "--detail") detail = true;
+
     IPM<double> ipm;
     auto A = ipm.read_file(folder + "/A.csv");
     auto b = ipm.read_file(folder + "/b.csv");
     auto c = ipm.read_file(folder + "/c.csv");
 
-    ipm.set_Abc(A, b, c);
-    ipm.solve(true);
+    ipm.init(A, b, c);
+    ipm.solve(detail);
 
     cout << "executable finished\n";
     return 0;
