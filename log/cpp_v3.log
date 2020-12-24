@@ -1,0 +1,628 @@
+try data/data_matlab/adlittle
+total_wall_time_cost = 0.0018348
+presolve:0.0018337
+total_time_cost = 0.0018337
+status = VIOLATED tgt = 452859 |F(x_k)| = 1.10975e-05
+executable finished
+
+
+try data/data_matlab/afiro
+total_wall_time_cost = 0.0009699
+calgF:7.4e-06
+calF:1.18e-05
+update:5.6e-06
+search:7.72e-05
+init:0.0001255
+solve:0.000247
+presolve:0.0004641
+total_time_cost = 0.0009386
+status = DONE tgt = -464.753 |F(x_k)| = 4.1772e-06
+executable finished
+
+
+try data/data_matlab/bandm
+total_wall_time_cost = 0.0736632
+calgF:5.94e-05
+calF:0.0002025
+update:1.5e-05
+search:0.0147873
+init:0.0078886
+solve:0.0163377
+presolve:0.0342965
+total_time_cost = 0.073587
+status = DONE tgt = -158.628 |F(x_k)| = 3.35963e-06
+executable finished
+
+
+try data/data_matlab/beaconfd
+total_wall_time_cost = 0.0311718
+calgF:1.73e-05
+calF:9.14e-05
+update:5.9e-06
+search:0.0016714
+init:0.0022086
+solve:0.0069052
+presolve:0.0202383
+total_time_cost = 0.0311381
+status = DONE tgt = 33592.5 |F(x_k)| = 3.41797e-06
+executable finished
+
+
+try data/data_matlab/blend
+total_wall_time_cost = 0.006494
+calgF:1.37e-05
+calF:4.09e-05
+update:7.4e-06
+search:0.0004999
+init:0.0006304
+solve:0.0029282
+presolve:0.0023044
+total_time_cost = 0.0064249
+status = DONE tgt = -30.8122 |F(x_k)| = 6.3534e-06
+executable finished
+
+
+try data/data_matlab/bore3d
+total_wall_time_cost = 0.0063325
+presolve:0.0063312
+total_time_cost = 0.0063312
+status = VIOLATED tgt = 0.00112986 |F(x_k)| = 0.00518569
+executable finished
+
+
+try data/data_matlab/brandy
+total_wall_time_cost = 0.0415588
+calgF:4.23e-05
+calF:0.0001666
+update:1.35e-05
+search:0.0067433
+init:0.002495
+solve:0.0119807
+presolve:0.020041
+total_time_cost = 0.0414824
+status = DONE tgt = 1518.51 |F(x_k)| = 3.21604e-06
+executable finished
+
+
+try data/data_matlab/capri
+total_wall_time_cost = 0.147513
+calgF:0.0002058
+calF:0.0003983
+update:4.06e-05
+search:0.0438476
+init:0.0062927
+solve:0.0586622
+presolve:0.0378295
+total_time_cost = 0.147277
+status = DONE tgt = 1912.62 |F(x_k)| = 2.27006e-06
+executable finished
+
+
+try data/data_matlab/degen2
+total_wall_time_cost = 0.185986
+calgF:0.0001928
+calF:0.0002406
+update:1.36e-05
+search:0.0267633
+init:0.0255024
+solve:0.0536707
+presolve:0.0795324
+total_time_cost = 0.185916
+status = DONE tgt = -1435.18 |F(x_k)| = 4.29855e-06
+executable finished
+
+
+try data/data_matlab/e226
+total_wall_time_cost = 0.0486438
+calgF:6.92e-05
+calF:0.0002445
+update:1.91e-05
+search:0.0137732
+init:0.0038211
+solve:0.0151863
+presolve:0.0154189
+total_time_cost = 0.0485323
+status = DONE tgt = -18.7518 |F(x_k)| = 4.6375e-06
+executable finished
+
+
+try data/data_matlab/grow7
+total_wall_time_cost = 0.0569801
+calgF:9.25e-05
+calF:0.0002204
+update:2.21e-05
+search:0.038693
+init:0.001658
+solve:0.0136197
+presolve:0.0025413
+total_time_cost = 0.056847
+status = UNBOUNDED tgt = -1.85052e+19 |F(x_k)| = 41984
+executable finished
+
+
+try data/data_matlab/israel
+total_wall_time_cost = 0.128447
+calgF:0.0001103
+calF:0.0002282
+update:2.3e-05
+search:0.0139253
+init:0.0018454
+solve:0.055797
+presolve:0.0563302
+total_time_cost = 0.128259
+status = DONE tgt = -896645 |F(x_k)| = 4.46332e-06
+executable finished
+
+
+try data/data_matlab/kb2
+total_wall_time_cost = 0.000415
+presolve:0.0004139
+total_time_cost = 0.0004139
+status = VIOLATED tgt = 1.16751e-05 |F(x_k)| = 0.000692951
+executable finished
+
+
+try data/data_matlab/lotfi
+total_wall_time_cost = 0.0270865
+calgF:4.86e-05
+calF:0.0001083
+update:1.41e-05
+search:0.0060108
+init:0.0019562
+solve:0.0095303
+presolve:0.0093331
+total_time_cost = 0.0270014
+status = HARD tgt = -25.265 |F(x_k)| = 0.000111958
+executable finished
+
+
+try data/data_matlab/lpi_bgdbg1
+total_wall_time_cost = 0.346323
+presolve:0.346322
+total_time_cost = 0.346322
+status = VIOLATED tgt = 96.113 |F(x_k)| = 45.6667
+executable finished
+
+
+try data/data_matlab/lpi_bgprtr
+total_wall_time_cost = 0.0005335
+presolve:0.0005326
+total_time_cost = 0.0005326
+status = VIOLATED tgt = 7.47707e+06 |F(x_k)| = 5.50676
+executable finished
+
+
+try data/data_matlab/lpi_box1
+total_wall_time_cost = 0.0088945
+calgF:3.8e-06
+calF:3.2e-06
+search:0.0002479
+init:0.0040628
+solve:0.0001847
+presolve:0.0043867
+total_time_cost = 0.0088891
+status = DONE tgt = 0.000261 |F(x_k)| = 1.31915e-06
+executable finished
+
+
+try data/data_matlab/lpi_chemcom
+total_wall_time_cost = 0.0889719
+calgF:0.0002375
+calF:0.0001209
+update:1.78e-05
+search:0.0277158
+init:0.007371
+solve:0.0091532
+presolve:0.0442654
+total_time_cost = 0.0888816
+status = DONE tgt = 190.54 |F(x_k)| = 2.58881e-06
+executable finished
+
+
+try data/data_matlab/lpi_cplex2
+total_wall_time_cost = 0.020419
+calgF:3.82e-05
+calF:4.69e-05
+update:6.9e-06
+search:0.0040713
+init:0.0034896
+solve:0.0038562
+presolve:0.0088653
+total_time_cost = 0.0203744
+status = DONE tgt = 0.655058 |F(x_k)| = 9.10599e-06
+executable finished
+
+
+try data/data_matlab/lpi_ex72a
+total_wall_time_cost = 0.0081274
+calgF:1.37e-05
+calF:2.68e-05
+update:5.6e-06
+search:0.0011827
+init:0.0020751
+solve:0.0019761
+presolve:0.0027979
+total_time_cost = 0.0080779
+status = DONE tgt = 6.20068e-08 |F(x_k)| = 9.06553e-06
+executable finished
+
+
+try data/data_matlab/lpi_ex73a
+total_wall_time_cost = 0.0044712
+calgF:1.3e-06
+calF:2.1e-06
+search:0.0001193
+init:0.00181
+solve:9.68e-05
+presolve:0.0024378
+total_time_cost = 0.0044673
+status = DONE tgt = 0.000211 |F(x_k)| = 3e-06
+executable finished
+
+
+try data/data_matlab/lpi_forest6
+total_wall_time_cost = 0.0029368
+calgF:1e-05
+calF:1.79e-05
+update:5.5e-06
+search:0.0002947
+init:0.0002467
+solve:0.0004772
+presolve:0.0018518
+total_time_cost = 0.0029038
+status = DONE tgt = 270962 |F(x_k)| = 4.18095e-06
+executable finished
+
+
+try data/data_matlab/lpi_galenet
+total_wall_time_cost = 0.000516
+calgF:8.4e-06
+calF:1.11e-05
+update:7.8e-06
+search:2.25e-05
+init:7.5e-06
+solve:0.0001106
+presolve:0.0003047
+total_time_cost = 0.0004726
+status = DONE tgt = 0 |F(x_k)| = 7.31539e-06
+executable finished
+
+
+try data/data_matlab/lpi_itest2
+total_wall_time_cost = 0.0002337
+presolve:0.0002328
+total_time_cost = 0.0002328
+status = VIOLATED tgt = 0 |F(x_k)| = 2.43842
+executable finished
+
+
+try data/data_matlab/lpi_itest6
+total_wall_time_cost = 0.000389
+presolve:0.0003879
+total_time_cost = 0.0003879
+status = VIOLATED tgt = 62527.2 |F(x_k)| = 76895
+executable finished
+
+
+try data/data_matlab/lpi_klein1
+total_wall_time_cost = 0.0117712
+presolve:0.0117698
+total_time_cost = 0.0117698
+status = VIOLATED tgt = 0 |F(x_k)| = 1983.34
+executable finished
+
+
+try data/data_matlab/lpi_klein2
+total_wall_time_cost = 6.65694
+presolve:6.65694
+total_time_cost = 6.65694
+status = VIOLATED tgt = 0 |F(x_k)| = 32.1303
+executable finished
+
+
+try data/data_matlab/lpi_mondou2
+total_wall_time_cost = 0.0721217
+calgF:0.0001125
+calF:7.67e-05
+update:1.38e-05
+search:0.0194774
+init:0.0089833
+solve:0.0255252
+presolve:0.0178623
+total_time_cost = 0.0720512
+status = DONE tgt = 1.74903e+08 |F(x_k)| = 7.60745e-06
+executable finished
+
+
+try data/data_matlab/lpi_qual
+total_wall_time_cost = 0.0576051
+presolve:0.0576038
+total_time_cost = 0.0576038
+status = VIOLATED tgt = 25624 |F(x_k)| = 0.00024425
+executable finished
+
+
+try data/data_matlab/lpi_reactor
+total_wall_time_cost = 0.0556013
+presolve:0.0555998
+total_time_cost = 0.0555998
+status = VIOLATED tgt = -39044.4 |F(x_k)| = 1.38904e-05
+executable finished
+
+
+try data/data_matlab/lpi_refinery
+total_wall_time_cost = 0.132112
+presolve:0.13211
+total_time_cost = 0.13211
+status = VIOLATED tgt = 47765.2 |F(x_k)| = 0.00020775
+executable finished
+
+
+try data/data_matlab/lpi_vol1
+total_wall_time_cost = 0.065936
+presolve:0.0659343
+total_time_cost = 0.0659343
+status = VIOLATED tgt = 25624 |F(x_k)| = 0.00024425
+executable finished
+
+
+try data/data_matlab/lpi_woodinfe
+total_wall_time_cost = 0.0008884
+calgF:8.2e-06
+calF:1.48e-05
+update:4.8e-06
+search:0.0001761
+init:0.0001073
+solve:0.0002925
+presolve:0.0002499
+total_time_cost = 0.0008536
+status = DONE tgt = 2.45213e-09 |F(x_k)| = 3.63881e-06
+executable finished
+
+
+try data/data_matlab/nug05
+total_wall_time_cost = 0.0366161
+calgF:1.28e-05
+calF:2.77e-05
+update:4.4e-06
+search:0.0011874
+init:0.0035973
+solve:0.025392
+presolve:0.0063446
+total_time_cost = 0.0365662
+status = DONE tgt = 50 |F(x_k)| = 5.56168e-06
+executable finished
+
+
+try data/data_matlab/nug06
+total_wall_time_cost = 0.217642
+calgF:4.74e-05
+calF:4.85e-05
+update:6.1e-06
+search:0.0076896
+init:0.0182811
+solve:0.15791
+presolve:0.0336152
+total_time_cost = 0.217597
+status = DONE tgt = 86 |F(x_k)| = 6.75056e-06
+executable finished
+
+
+try data/data_matlab/nug07
+total_wall_time_cost = 1.08485
+calgF:0.0002926
+calF:0.0001214
+update:1.55e-05
+search:0.0385922
+init:0.0789926
+solve:0.850159
+presolve:0.116579
+total_time_cost = 1.08475
+status = DONE tgt = 148 |F(x_k)| = 3.3953e-06
+executable finished
+
+
+try data/data_matlab/recipe
+total_wall_time_cost = 0.0007033
+presolve:0.0007025
+total_time_cost = 0.0007025
+status = VIOLATED tgt = -1.8e-05 |F(x_k)| = 0.000907221
+executable finished
+
+
+try data/data_matlab/sc105
+total_wall_time_cost = 0.004488
+calgF:1.06e-05
+calF:1.97e-05
+update:5.4e-06
+search:0.000434
+init:0.0005538
+solve:0.0009265
+presolve:0.0025074
+total_time_cost = 0.0044574
+status = DONE tgt = -52.2021 |F(x_k)| = 5.44631e-06
+executable finished
+
+
+try data/data_matlab/sc205
+total_wall_time_cost = 0.0185349
+calgF:3.22e-05
+calF:4.81e-05
+update:9e-06
+search:0.0043819
+init:0.0036254
+solve:0.0026693
+presolve:0.0076804
+total_time_cost = 0.0184463
+status = DONE tgt = -52.2021 |F(x_k)| = 3.20755e-06
+executable finished
+
+
+try data/data_matlab/sc50a
+total_wall_time_cost = 0.0022347
+calgF:2.55e-05
+calF:1.35e-05
+update:4.8e-06
+search:0.000154
+init:0.0002486
+solve:0.0005102
+presolve:0.001218
+total_time_cost = 0.0021746
+status = DONE tgt = -64.5751 |F(x_k)| = 2.23133e-06
+executable finished
+
+
+try data/data_matlab/sc50b
+total_wall_time_cost = 0.0029918
+calgF:1.39e-05
+calF:2.28e-05
+update:9.6e-06
+search:0.0002772
+init:0.0002673
+solve:0.0008356
+presolve:0.0014795
+total_time_cost = 0.0029059
+status = DONE tgt = -70 |F(x_k)| = 9.32647e-06
+executable finished
+
+
+try data/data_matlab/scagr25
+total_wall_time_cost = 0.111804
+calgF:0.0002216
+calF:0.0001348
+update:2.02e-05
+search:0.0383129
+init:0.0265297
+solve:0.0086512
+presolve:0.0378356
+total_time_cost = 0.111706
+status = DONE tgt = -1.47534e+07 |F(x_k)| = 2.78454e-06
+executable finished
+
+
+try data/data_matlab/scagr7
+total_wall_time_cost = 0.0069261
+calgF:1.82e-05
+calF:3.81e-05
+update:7.9e-06
+search:0.0011355
+init:0.0008685
+solve:0.0026483
+presolve:0.0021606
+total_time_cost = 0.0068771
+status = DONE tgt = -2.33139e+06 |F(x_k)| = 4.0766e-06
+executable finished
+
+
+try data/data_matlab/scfxm1
+total_wall_time_cost = 0.081943
+calgF:0.0001542
+calF:0.00024
+update:1.75e-05
+search:0.0192841
+init:0.0100322
+solve:0.0154811
+presolve:0.036643
+total_time_cost = 0.0818521
+status = DONE tgt = 18416.8 |F(x_k)| = 3.30623e-06
+executable finished
+
+
+try data/data_matlab/scorpion
+total_wall_time_cost = 0.597463
+calgF:6.71e-05
+calF:7.17e-05
+update:1.3e-05
+search:0.0116679
+init:0.0172446
+solve:0.29702
+presolve:0.271311
+total_time_cost = 0.597395
+status = DONE tgt = 1878.12 |F(x_k)| = 4.92952e-06
+executable finished
+
+
+try data/data_matlab/scsd1
+total_wall_time_cost = 0.0210925
+calgF:0.0001319
+calF:0.0001049
+update:1.09e-05
+search:0.0152174
+init:0.0004836
+solve:0.0030079
+presolve:0.0020774
+total_time_cost = 0.021034
+status = DONE tgt = 8.6667 |F(x_k)| = 2.17076e-06
+executable finished
+
+
+try data/data_matlab/sctap1
+total_wall_time_cost = 0.0748301
+calgF:0.0001927
+calF:0.0001268
+update:1.73e-05
+search:0.0237967
+init:0.0076435
+solve:0.0085143
+presolve:0.0344453
+total_time_cost = 0.0747366
+status = DONE tgt = 1412.25 |F(x_k)| = 5.64959e-06
+executable finished
+
+
+try data/data_matlab/share1b
+total_wall_time_cost = 0.018984
+calgF:6.29e-05
+calF:0.0001872
+update:4.26e-05
+search:0.0034874
+init:0.0008018
+solve:0.00704
+presolve:0.007236
+total_time_cost = 0.0188579
+status = DONE tgt = -76589.3 |F(x_k)| = 5.58772e-06
+executable finished
+
+
+try data/data_matlab/share2b
+total_wall_time_cost = 0.0081855
+calgF:4.58e-05
+calF:7.21e-05
+update:9.4e-06
+search:0.0011586
+init:0.0005464
+solve:0.0034509
+presolve:0.0028274
+total_time_cost = 0.0081106
+status = DONE tgt = -415.732 |F(x_k)| = 6.3169e-06
+executable finished
+
+
+try data/data_matlab/stocfor1
+total_wall_time_cost = 0.0067126
+calgF:8.1e-06
+calF:1.47e-05
+update:3.4e-06
+search:0.0007818
+init:0.0007755
+solve:0.0012044
+presolve:0.0039026
+total_time_cost = 0.0066905
+status = UNBOUNDED tgt = -28736.5 |F(x_k)| = 106.963
+executable finished
+
+
+try data/data_matlab/vtp_base
+total_wall_time_cost = 0.0558062
+calgF:0.0001028
+calF:0.0002303
+update:3.25e-05
+search:0.0125581
+init:0.0039594
+solve:0.0207947
+presolve:0.0179248
+total_time_cost = 0.0556026
+status = DONE tgt = 11120.7 |F(x_k)| = 1.37387e-06
+executable finished
+
+
