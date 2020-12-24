@@ -218,130 +218,132 @@ template <class DataType> class IPM {
         unordered_map<string, double> time_cost;
         Status status = TBD;
 
-        TIMER_START(presolve);
-        if (!is_presolve) {
-            auto c_real = c;
-            c = Mat::Zero(c.rows(), c.cols());
-            auto presolve_status = solve(false, true);
-            c = c_real;
-            // cout << "presolve_status = " << status_str[presolve_status] << "\n";
-            if (presolve_status > HARD) { status = VIOLATED; }
-        }
-        TIMER_RECORD(presolve);
+        TIMER_START(init);
+        tie(x_k, lam_k, s_k) = init_iterate();
+        TIMER_RECORD(init);
 
-        if (status == TBD) {
+        for (int k = 1; k <= max_iterations; k++) {
+            TIMER_START(calF);
+            F_k = F(x_k, lam_k, s_k);
+            TIMER_RECORD(calF);
+            TIMER_START(calgF);
+            gF(x_k, lam_k, s_k);
+            TIMER_RECORD(calgF);
 
-            TIMER_START(init);
-            tie(x_k, lam_k, s_k) = init_iterate();
-            TIMER_RECORD(init);
+            TIMER_START(solve);
+            F_d = F_k.block(0, 0, n, 1);
+            F_p = F_k.block(n, 0, m, 1);
+            F_0 = F_k.block(n + m, 0, n, 1);
 
-            for (int k = 1; k <= max_iterations; k++) {
-                TIMER_START(calF);
-                F_k = F(x_k, lam_k, s_k);
-                TIMER_RECORD(calF);
-                TIMER_START(calgF);
-                gF(x_k, lam_k, s_k);
-                TIMER_RECORD(calgF);
+            tie(dx_k, dlam_k, ds_k) = solve_newton(F_d, F_p, F_0, true);
 
-                TIMER_START(solve);
-                F_d = F_k.block(0, 0, n, 1);
-                F_p = F_k.block(n, 0, m, 1);
-                F_0 = F_k.block(n + m, 0, n, 1);
+            alpha_p = maximum_alpha(x_k, dx_k);
+            alpha_d = maximum_alpha(s_k, ds_k);
 
-                tie(dx_k, dlam_k, ds_k) = solve_newton(F_d, F_p, F_0, true);
+            auto mu = (x_k.transpose() * s_k).value() / n;
+            auto sigma =
+                ((x_k + alpha_p * dx_k).transpose() * (s_k + alpha_d * ds_k))
+                    .value() /
+                n / mu;
+            auto toler = mu * sigma / n;
 
-                alpha_p = maximum_alpha(x_k, dx_k);
-                alpha_d = maximum_alpha(s_k, ds_k);
+            F_d = F_k.block(0, 0, n, 1);
+            F_p = F_k.block(n, 0, m, 1);
+            F_0 = F_k.block(n + m, 0, n, 1).array() - toler;
+            tie(dx_k, dlam_k, ds_k) = solve_newton(F_d, F_p, F_0, false);
 
-                auto mu = (x_k.transpose() * s_k).value() / n;
-                auto sigma = ((x_k + alpha_p * dx_k).transpose() *
-                              (s_k + alpha_d * ds_k))
-                                 .value() /
-                             n / mu;
-                auto toler = mu * sigma / n;
+            alpha_p = maximum_alpha(x_k, dx_k);
+            alpha_d = maximum_alpha(s_k, ds_k);
+            TIMER_RECORD(solve);
 
-                F_d = F_k.block(0, 0, n, 1);
-                F_p = F_k.block(n, 0, m, 1);
-                F_0 = F_k.block(n + m, 0, n, 1).array() - toler;
-                tie(dx_k, dlam_k, ds_k) = solve_newton(F_d, F_p, F_0, false);
+            TIMER_START(search);
 
-                alpha_p = maximum_alpha(x_k, dx_k);
-                alpha_d = maximum_alpha(s_k, ds_k);
-                TIMER_RECORD(solve);
-
-                TIMER_START(search);
-
-                while ((DataType)(((x_k + alpha_p * dx_k).array() *
-                                   (s_k + alpha_d * ds_k).array())
-                                      .maxCoeff()) <= gamma * mu) {
-                    alpha_p *= gamma;
-                    alpha_d *= gamma;
-                    if (alpha_d < eps * eps and alpha_p < eps * eps) { break; }
-                }
-
-                Vec dz_k(n + m + n, 1);
-                dz_k << alpha_p * dx_k, alpha_d * dlam_k, alpha_d * ds_k;
-                Vec desc = c1 * gF_k.transpose() * dz_k;
-
-                while (F(x_k + alpha_p * dx_k, lam_k + alpha_d * dlam_k,
-                         s_k + alpha_d * ds_k)
-                           .template lpNorm<Infinity>() >=
-                       (F_k + desc).template lpNorm<Infinity>()) {
-                    alpha_p *= gamma;
-                    alpha_d *= gamma;
-                    desc *= gamma;
-                    if (alpha_d < eps * eps and alpha_p < eps * eps) { break; }
-                }
-
-                TIMER_RECORD(search);
-
-                if (detail) {
-                    printf("k=%3d,"
-                           "f(x)=%5.6f,"
-                           "|dx|=%.3e,"
-                           "|dlam|=%.3e,"
-                           "|ds|=%.3e,"
-                           "|F(x)_d|=%.3e,"
-                           "|F(x)_p|=%.3e,"
-                           "|F(x)_0|=%.3e,"
-                           "alpha_p=%.3e,"
-                           "alpha_d=%.3e,"
-                           "\n",
-                           k, f_primal(x_k), dx_k.template lpNorm<Infinity>(),
-                           dlam_k.template lpNorm<Infinity>(),
-                           ds_k.template lpNorm<Infinity>(),
-                           F_d.template lpNorm<Infinity>(),
-                           F_p.template lpNorm<Infinity>(),
-                           F_0.template lpNorm<Infinity>(), alpha_p, alpha_d);
-                }
-
-                if (F_k.template lpNorm<Infinity>() < terminal) {
-                    status = DONE;
-                    break;
-                }
-
-                if (dz_k.template lpNorm<Infinity>() > 1e31) {
-                    status = UNBOUNDED;
-                    break;
-                }
-                if ((alpha_p * dx_k).template lpNorm<Infinity>() < eps and
-                    (alpha_d * ds_k).template lpNorm<Infinity>() < eps) {
-                    if (F_k.template lpNorm<Infinity>() < sqrt(terminal))
-                        status = HARD;
-                    else
-                        status = UNBOUNDED;
-                    break;
-                }
-
-                TIMER_START(update);
-                x_k += alpha_p * dx_k;
-                lam_k += alpha_d * dlam_k;
-                s_k += alpha_d * ds_k;
-                TIMER_RECORD(update);
+            while ((DataType)(((x_k + alpha_p * dx_k).array() *
+                               (s_k + alpha_d * ds_k).array())
+                                  .maxCoeff()) <= gamma * mu) {
+                alpha_p *= gamma;
+                alpha_d *= gamma;
+                if (alpha_d < eps * eps and alpha_p < eps * eps) { break; }
             }
 
-            if (status == TBD) { status = EXPIRED; }
-            if (is_presolve) return status;
+            Vec dz_k(n + m + n, 1);
+            dz_k << alpha_p * dx_k, alpha_d * dlam_k, alpha_d * ds_k;
+            Vec desc = c1 * gF_k.transpose() * dz_k;
+
+            while (F(x_k + alpha_p * dx_k, lam_k + alpha_d * dlam_k,
+                     s_k + alpha_d * ds_k)
+                       .template lpNorm<Infinity>() >=
+                   (F_k + desc).template lpNorm<Infinity>()) {
+                alpha_p *= gamma;
+                alpha_d *= gamma;
+                desc *= gamma;
+                if (alpha_d < eps * eps and alpha_p < eps * eps) { break; }
+            }
+
+            TIMER_RECORD(search);
+
+            if (detail) {
+                printf("k=%3d,"
+                       "f(x)=%5.6f,"
+                       "|dx|=%.3e,"
+                       "|dlam|=%.3e,"
+                       "|ds|=%.3e,"
+                       "|F(x)_d|=%.3e,"
+                       "|F(x)_p|=%.3e,"
+                       "|F(x)_0|=%.3e,"
+                       "alpha_p=%.3e,"
+                       "alpha_d=%.3e,"
+                       "\n",
+                       k, f_primal(x_k), dx_k.template lpNorm<Infinity>(),
+                       dlam_k.template lpNorm<Infinity>(),
+                       ds_k.template lpNorm<Infinity>(),
+                       F_d.template lpNorm<Infinity>(),
+                       F_p.template lpNorm<Infinity>(),
+                       F_0.template lpNorm<Infinity>(), alpha_p, alpha_d);
+            }
+
+            if (F_k.template lpNorm<Infinity>() < terminal) {
+                status = DONE;
+                break;
+            }
+
+            if (dz_k.template lpNorm<Infinity>() > 1e31) {
+                status = UNBOUNDED;
+                break;
+            }
+            if ((alpha_p * dx_k).template lpNorm<Infinity>() < eps and
+                (alpha_d * ds_k).template lpNorm<Infinity>() < eps) {
+                if (F_k.template lpNorm<Infinity>() < 1e-3)
+                    status = HARD;
+                else
+                    status = UNBOUNDED;
+                break;
+            }
+
+            TIMER_START(update);
+            x_k += alpha_p * dx_k;
+            lam_k += alpha_d * dlam_k;
+            s_k += alpha_d * ds_k;
+            TIMER_RECORD(update);
+        }
+
+        if (status == TBD) { status = EXPIRED; }
+        if (is_presolve)
+            return status;
+        else {
+            if (status > HARD) {
+                TIMER_START(presolve);
+
+                auto c_real = c;
+                c = Mat::Zero(c.rows(), c.cols());
+                auto presolve_status = solve(false, true);
+                c = c_real;
+                // cout << "presolve_status = " << status_str[presolve_status]
+                // <<
+                // "\n";
+                if (presolve_status > HARD) { status = VIOLATED; }
+                TIMER_RECORD(presolve);
+            }
         }
 
         auto total_wall_time_cost =

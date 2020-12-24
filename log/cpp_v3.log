@@ -1,669 +1,674 @@
 try data/data_matlab/adlittle
-total_wall_time_cost = 0.004405
-calgF:2.81e-05
-calF:3.14e-05
-update:7e-06
-search:0.000357
-init:0.0001951
-solve:0.0015627
-presolve:0.0021818
-total_time_cost = 0.0043631
+total_wall_time_cost = 0.0040591
+solve:0.0025723
+calgF:1.67e-05
+calF:8.65e-05
+update:9.8e-06
+search:0.0008376
+init:0.0004492
+total_time_cost = 0.0039721
 status = DONE tgt = 225495 |F(x_k)| = 1.92577e-06
 executable finished
 
 
 try data/data_matlab/afiro
-total_wall_time_cost = 0.0008816
-calgF:6.8e-06
-calF:1.18e-05
-update:5e-06
-search:6.55e-05
-init:0.0001321
-solve:0.0002384
-presolve:0.0003905
-total_time_cost = 0.0008501
+total_wall_time_cost = 0.0005656
+solve:0.0003392
+calgF:7.1e-06
+calF:1.39e-05
+update:5.2e-06
+search:6.47e-05
+init:8.08e-05
+total_time_cost = 0.0005109
 status = DONE tgt = -464.753 |F(x_k)| = 4.1772e-06
 executable finished
 
 
 try data/data_matlab/bandm
-total_wall_time_cost = 0.0785455
-calgF:7.65e-05
-calF:0.0002241
-update:1.63e-05
-search:0.0188677
-init:0.008145
-solve:0.0182198
-presolve:0.0328758
-total_time_cost = 0.0784252
+total_wall_time_cost = 0.0405658
+solve:0.0167334
+calgF:6.33e-05
+calF:0.000205
+update:1.41e-05
+search:0.0149793
+init:0.0084797
+total_time_cost = 0.0404748
 status = DONE tgt = -158.628 |F(x_k)| = 3.35963e-06
 executable finished
 
 
 try data/data_matlab/beaconfd
-total_wall_time_cost = 0.0320234
-calgF:1.89e-05
-calF:0.000107
-update:6e-06
-search:0.0024185
-init:0.0027845
-solve:0.0078595
-presolve:0.0187907
-total_time_cost = 0.0319851
+total_wall_time_cost = 0.0167538
+solve:0.0094558
+calgF:2.37e-05
+calF:0.0001263
+update:7e-06
+search:0.0036569
+init:0.0034243
+total_time_cost = 0.016694
 status = DONE tgt = 33592.5 |F(x_k)| = 3.41797e-06
 executable finished
 
 
 try data/data_matlab/blend
-total_wall_time_cost = 0.0053039
-calgF:1.19e-05
-calF:3.11e-05
-update:6.8e-06
-search:0.0004855
-init:0.0003228
-solve:0.0029372
-presolve:0.0014531
-total_time_cost = 0.0052484
+total_wall_time_cost = 0.0035796
+solve:0.0026002
+calgF:1.07e-05
+calF:4.75e-05
+update:6.5e-06
+search:0.0003383
+init:0.0005287
+total_time_cost = 0.0035319
 status = DONE tgt = -30.8122 |F(x_k)| = 6.3534e-06
 executable finished
 
 
 try data/data_matlab/bore3d
-total_wall_time_cost = 0.0049683
-presolve:0.0049667
-total_time_cost = 0.0049667
-status = VIOLATED tgt = 0.00112986 |F(x_k)| = 0.00518569
+total_wall_time_cost = 0.0147589
+solve:0.0067103
+calgF:2.56e-05
+calF:7.62e-05
+update:7.4e-06
+search:0.0031145
+init:0.0047693
+total_time_cost = 0.0147033
+status = DONE tgt = 6.32978e-07 |F(x_k)| = 3.37383e-07
 executable finished
 
 
 try data/data_matlab/brandy
-total_wall_time_cost = 0.0352995
-calgF:3.27e-05
-calF:0.0001405
-update:1.2e-05
-search:0.0030869
-init:0.002353
-solve:0.0115087
-presolve:0.0181026
-total_time_cost = 0.0352364
+total_wall_time_cost = 0.0194439
+solve:0.0123505
+calgF:5.74e-05
+calF:0.0001792
+update:1.22e-05
+search:0.003917
+init:0.00283
+total_time_cost = 0.0193463
 status = DONE tgt = 1518.51 |F(x_k)| = 3.21604e-06
 executable finished
 
 
 try data/data_matlab/capri
-total_wall_time_cost = 0.124592
-calgF:0.0001666
-calF:0.0003853
-update:4.03e-05
-search:0.0341272
-init:0.0067037
-solve:0.0552504
-presolve:0.0277034
-total_time_cost = 0.124377
+total_wall_time_cost = 0.0985955
+solve:0.0547458
+calgF:0.0001909
+calF:0.0003995
+update:4.05e-05
+search:0.0353016
+init:0.0076914
+total_time_cost = 0.0983697
 status = DONE tgt = 1912.62 |F(x_k)| = 2.27006e-06
 executable finished
 
 
 try data/data_matlab/degen2
-total_wall_time_cost = 0.201412
-calgF:0.0002081
-calF:0.0002793
-update:1.58e-05
-search:0.0296003
-init:0.0277601
-solve:0.0611251
-presolve:0.0823263
-total_time_cost = 0.201315
+total_wall_time_cost = 0.111125
+solve:0.0588134
+calgF:0.0002222
+calF:0.0002265
+update:1.36e-05
+search:0.0272144
+init:0.0245472
+total_time_cost = 0.111037
 status = DONE tgt = -1435.18 |F(x_k)| = 4.29855e-06
 executable finished
 
 
 try data/data_matlab/e226
-total_wall_time_cost = 0.0515858
-calgF:6.92e-05
-calF:0.0002162
-update:1.67e-05
-search:0.0175425
-init:0.0038386
-solve:0.0141112
-presolve:0.0156929
-total_time_cost = 0.0514873
+total_wall_time_cost = 0.0312412
+solve:0.0136896
+calgF:6.5e-05
+calF:0.0001992
+update:1.55e-05
+search:0.0134437
+init:0.0037309
+total_time_cost = 0.0311439
 status = DONE tgt = -18.7518 |F(x_k)| = 4.6375e-06
 executable finished
 
 
 try data/data_matlab/grow7
-total_wall_time_cost = 0.0519394
-calgF:7.82e-05
-calF:0.000215
-update:2.02e-05
-search:0.0362475
-init:0.0010835
-solve:0.0123629
-presolve:0.0018134
-total_time_cost = 0.0518207
-status = UNBOUNDED tgt = -1.85052e+19 |F(x_k)| = 41984
+total_wall_time_cost = 0.0544022
+presolve:0.0014226
+solve:0.0127329
+calgF:6.87e-05
+calF:0.0002085
+update:2.03e-05
+search:0.0386807
+init:0.0011416
+total_time_cost = 0.0542753
+status = UNBOUNDED tgt = -7.8e-05 |F(x_k)| = 2.68692e-06
 executable finished
 
 
 try data/data_matlab/israel
-total_wall_time_cost = 0.125564
-calgF:0.0001044
-calF:0.0002525
-update:2.15e-05
-search:0.0114778
-init:0.0021718
-solve:0.0539429
-presolve:0.0574003
-total_time_cost = 0.125371
+total_wall_time_cost = 0.0594567
+solve:0.047902
+calgF:6.18e-05
+calF:0.0002197
+update:1.95e-05
+search:0.009004
+init:0.0021134
+total_time_cost = 0.0593204
 status = DONE tgt = -896645 |F(x_k)| = 4.46332e-06
 executable finished
 
 
 try data/data_matlab/kb2
-total_wall_time_cost = 0.0980787
-calgF:0.0002366
-calF:0.000504
-update:0.0001766
-search:0.0702759
-init:0.0001771
-solve:0.0251839
-presolve:0.0004001
-total_time_cost = 0.0969542
-status = EXPIRED tgt = -5.96643e+08 |F(x_k)| = 0.110959
+total_wall_time_cost = 0.0911566
+presolve:0.0002786
+solve:0.0237489
+calgF:0.0002205
+calF:0.0004526
+update:0.0001762
+search:0.0651271
+init:0.0001428
+total_time_cost = 0.0901467
+status = EXPIRED tgt = 1.16751e-05 |F(x_k)| = 0.000692951
 executable finished
 
 
 try data/data_matlab/lotfi
-total_wall_time_cost = 0.0285878
-calgF:6.11e-05
-calF:0.0001371
-update:1.52e-05
-search:0.0068239
-init:0.0018233
-solve:0.0097154
-presolve:0.0099101
-total_time_cost = 0.0284861
+total_wall_time_cost = 0.0292034
+solve:0.0122402
+calgF:7.22e-05
+calF:0.0001862
+update:1.8e-05
+search:0.0147147
+init:0.0018388
+total_time_cost = 0.0290701
 status = HARD tgt = -25.265 |F(x_k)| = 0.000111958
 executable finished
 
 
 try data/data_matlab/lpi_bgdbg1
-total_wall_time_cost = 0.375984
-presolve:0.375982
-total_time_cost = 0.375982
+total_wall_time_cost = 0.813574
+presolve:0.389526
+solve:0.353482
+calgF:0.0004466
+calF:0.0002361
+update:3.2e-05
+search:0.0515479
+init:0.0180645
+total_time_cost = 0.813335
 status = VIOLATED tgt = 96.113 |F(x_k)| = 45.6667
 executable finished
 
 
 try data/data_matlab/lpi_bgprtr
-total_wall_time_cost = 0.0009269
-presolve:0.0009258
-total_time_cost = 0.0009258
+total_wall_time_cost = 0.044296
+presolve:0.0004541
+solve:0.0047952
+calgF:0.0001966
+calF:0.0002636
+update:0.0001532
+search:0.0374545
+init:0.0001113
+total_time_cost = 0.0434285
 status = VIOLATED tgt = 7.47707e+06 |F(x_k)| = 5.50676
 executable finished
 
 
 try data/data_matlab/lpi_box1
-total_wall_time_cost = 0.0078097
-calgF:3.2e-06
-calF:2.7e-06
-search:0.0001851
-init:0.0031822
-solve:0.0001013
-presolve:0.0043308
-total_time_cost = 0.0078053
+total_wall_time_cost = 0.0041169
+solve:0.0001271
+calgF:3.7e-06
+calF:5.2e-06
+search:0.0002473
+init:0.0037188
+total_time_cost = 0.0041021
 status = DONE tgt = 0.000261 |F(x_k)| = 1.31915e-06
 executable finished
 
 
 try data/data_matlab/lpi_chemcom
-total_wall_time_cost = 0.085411
-calgF:0.0002676
-calF:0.0001222
-update:1.91e-05
-search:0.0275083
-init:0.0073529
-solve:0.0093019
-presolve:0.0407468
-total_time_cost = 0.0853188
+total_wall_time_cost = 0.0473013
+solve:0.0094676
+calgF:0.0002515
+calF:0.0001248
+update:1.81e-05
+search:0.0291432
+init:0.0081919
+total_time_cost = 0.0471971
 status = DONE tgt = 190.54 |F(x_k)| = 2.58881e-06
 executable finished
 
 
 try data/data_matlab/lpi_cplex2
-total_wall_time_cost = 0.0192548
-calgF:2.21e-05
-calF:4.42e-05
+total_wall_time_cost = 0.0116609
+solve:0.0036912
+calgF:2.94e-05
+calF:5e-05
 update:6.9e-06
-search:0.0032787
-init:0.0034958
-solve:0.0036852
-presolve:0.0086821
-total_time_cost = 0.019215
+search:0.0039103
+init:0.00392
+total_time_cost = 0.0116078
 status = DONE tgt = 0.655058 |F(x_k)| = 9.10599e-06
 executable finished
 
 
 try data/data_matlab/lpi_ex72a
-total_wall_time_cost = 0.0078162
-calgF:1.44e-05
-calF:4.3e-05
-update:5.1e-06
-search:0.0012788
-init:0.002045
-solve:0.0017686
-presolve:0.0025984
-total_time_cost = 0.0077533
+total_wall_time_cost = 0.0052022
+solve:0.0016442
+calgF:1.45e-05
+calF:2.79e-05
+update:5.3e-06
+search:0.0010412
+init:0.0024127
+total_time_cost = 0.0051458
 status = DONE tgt = 6.20068e-08 |F(x_k)| = 9.06553e-06
 executable finished
 
 
 try data/data_matlab/lpi_ex73a
-total_wall_time_cost = 0.0043868
-calgF:1.2e-06
-calF:1.9e-06
-search:9.39e-05
-init:0.0017543
-solve:9.53e-05
-presolve:0.0024365
-total_time_cost = 0.0043831
+total_wall_time_cost = 0.0027474
+solve:0.0001143
+calgF:2.2e-06
+calF:4.1e-06
+search:0.0001198
+init:0.0024937
+total_time_cost = 0.0027341
 status = DONE tgt = 0.000211 |F(x_k)| = 3e-06
 executable finished
 
 
 try data/data_matlab/lpi_forest6
-total_wall_time_cost = 0.0031674
-calgF:9.6e-06
-calF:1.71e-05
-update:5.5e-06
-search:0.0002531
-init:0.0002719
-solve:0.0004372
-presolve:0.0021419
-total_time_cost = 0.0031363
+total_wall_time_cost = 0.0020843
+solve:0.0007833
+calgF:1.16e-05
+calF:2.32e-05
+update:2.22e-05
+search:0.0004661
+init:0.0006838
+total_time_cost = 0.0019902
 status = DONE tgt = 270962 |F(x_k)| = 4.18095e-06
 executable finished
 
 
 try data/data_matlab/lpi_galenet
-total_wall_time_cost = 0.0007239
-calgF:8.4e-06
-calF:1.16e-05
-update:2.1e-05
-search:2.27e-05
-init:8e-06
-solve:0.0001105
-presolve:0.0004837
-total_time_cost = 0.0006659
+total_wall_time_cost = 0.0002792
+solve:0.000128
+calgF:8.8e-06
+calF:1.37e-05
+update:8e-06
+search:2.66e-05
+init:4.07e-05
+total_time_cost = 0.0002258
 status = DONE tgt = 0 |F(x_k)| = 7.31539e-06
 executable finished
 
 
 try data/data_matlab/lpi_itest2
-total_wall_time_cost = 0.0002202
-presolve:0.0002193
-total_time_cost = 0.0002193
+total_wall_time_cost = 0.0003579
+presolve:0.0001319
+solve:9.68e-05
+calgF:2.3e-06
+calF:5.5e-06
+update:2.4e-06
+search:5.47e-05
+init:4.17e-05
+total_time_cost = 0.0003353
 status = VIOLATED tgt = 0 |F(x_k)| = 2.43842
 executable finished
 
 
 try data/data_matlab/lpi_itest6
-total_wall_time_cost = 0.0003461
-presolve:0.0003446
-total_time_cost = 0.0003446
+total_wall_time_cost = 0.0004695
+presolve:0.0001899
+solve:0.0001111
+calgF:2.8e-06
+calF:8.8e-06
+update:2.5e-06
+search:6.53e-05
+init:4.46e-05
+total_time_cost = 0.000425
 status = VIOLATED tgt = 62527.2 |F(x_k)| = 76895
 executable finished
 
 
 try data/data_matlab/lpi_klein1
-total_wall_time_cost = 0.0138488
-presolve:0.0138475
-total_time_cost = 0.0138475
+total_wall_time_cost = 0.029257
+presolve:0.0152163
+solve:0.0118521
+calgF:5.14e-05
+calF:0.0001756
+update:2.5e-05
+search:0.0012698
+init:0.0004145
+total_time_cost = 0.0290047
 status = VIOLATED tgt = 0 |F(x_k)| = 1983.34
 executable finished
 
 
 try data/data_matlab/lpi_klein2
-total_wall_time_cost = 6.59299
-presolve:6.59299
-total_time_cost = 6.59299
+total_wall_time_cost = 13.5948
+presolve:6.87135
+solve:6.43061
+calgF:0.0018362
+calF:0.0021569
+update:0.0001739
+search:0.256826
+init:0.0305454
+total_time_cost = 13.5935
 status = VIOLATED tgt = 0 |F(x_k)| = 32.1303
 executable finished
 
 
 try data/data_matlab/lpi_mondou2
-total_wall_time_cost = 0.0791996
-calgF:0.0001382
-calF:9.4e-05
-update:1.36e-05
-search:0.0214308
-init:0.0100961
-solve:0.0268466
-presolve:0.0205039
-total_time_cost = 0.0791232
+total_wall_time_cost = 0.0660084
+solve:0.0279635
+calgF:0.0001616
+calF:8.07e-05
+update:2.83e-05
+search:0.0281893
+init:0.0094847
+total_time_cost = 0.0659081
 status = DONE tgt = 1.74903e+08 |F(x_k)| = 7.60745e-06
 executable finished
 
 
 try data/data_matlab/lpi_qual
-total_wall_time_cost = 4.48391
-calgF:0.0016345
-calF:0.001738
-update:0.0002737
-search:0.520218
-init:0.0107042
-solve:3.88262
-presolve:0.0649154
-total_time_cost = 4.4821
-status = EXPIRED tgt = -8.71201e+11 |F(x_k)| = 21667
+total_wall_time_cost = 4.63933
+presolve:0.073461
+solve:3.99824
+calgF:0.0021311
+calF:0.0017688
+update:0.0003414
+search:0.551197
+init:0.0101811
+total_time_cost = 4.63732
+status = EXPIRED tgt = 25624 |F(x_k)| = 0.00024425
 executable finished
 
 
 try data/data_matlab/lpi_reactor
-total_wall_time_cost = 0.100217
-calgF:0.00017
-calF:0.000107
+total_wall_time_cost = 0.097716
+presolve:0.0579851
+solve:0.0078437
+calgF:0.0001816
+calF:0.0001214
 update:1.05e-05
-search:0.0215632
-init:0.0106466
-solve:0.0076881
-presolve:0.0599778
-total_time_cost = 0.100163
-status = UNBOUNDED tgt = -59161.7 |F(x_k)| = 66.2096
+search:0.0217657
+init:0.0097424
+total_time_cost = 0.0976504
+status = UNBOUNDED tgt = -39044.4 |F(x_k)| = 1.38904e-05
 executable finished
 
 
 try data/data_matlab/lpi_refinery
-total_wall_time_cost = 4.02585
-calgF:0.001487
-calF:0.0017771
-update:0.0002613
-search:0.478194
-init:0.0098226
-solve:3.42709
-presolve:0.105563
-total_time_cost = 4.02419
-status = EXPIRED tgt = -5.41897e+09 |F(x_k)| = 7515.23
+total_wall_time_cost = 4.26209
+presolve:0.111011
+solve:3.59475
+calgF:0.0022271
+calF:0.0019516
+update:0.0003122
+search:0.539528
+init:0.010151
+total_time_cost = 4.25993
+status = EXPIRED tgt = 47765.2 |F(x_k)| = 0.00020775
 executable finished
 
 
 try data/data_matlab/lpi_vol1
-total_wall_time_cost = 4.60221
-calgF:0.0017517
-calF:0.0017839
-update:0.000274
-search:0.531889
-init:0.0098482
-solve:3.99167
-presolve:0.0632291
-total_time_cost = 4.60044
-status = EXPIRED tgt = -8.71201e+11 |F(x_k)| = 21667
+total_wall_time_cost = 4.50122
+presolve:0.0612959
+solve:3.88911
+calgF:0.001943
+calF:0.0018127
+update:0.0002717
+search:0.534669
+init:0.0102621
+total_time_cost = 4.49936
+status = EXPIRED tgt = 25624 |F(x_k)| = 0.00024425
 executable finished
 
 
 try data/data_matlab/lpi_woodinfe
-total_wall_time_cost = 0.0006213
-calgF:1.86e-05
-calF:9.5e-06
-update:3.7e-06
-search:0.0001072
-init:6.69e-05
-solve:0.0002171
-presolve:0.0001742
-total_time_cost = 0.0005972
+total_wall_time_cost = 0.000744
+solve:0.0002911
+calgF:6.2e-06
+calF:1.24e-05
+update:3.9e-06
+search:0.0002872
+init:0.00011
+total_time_cost = 0.0007108
 status = DONE tgt = 2.45213e-09 |F(x_k)| = 3.63881e-06
 executable finished
 
 
 try data/data_matlab/nug05
-total_wall_time_cost = 0.0361048
-calgF:1.27e-05
-calF:2.83e-05
+total_wall_time_cost = 0.0324733
+solve:0.0274277
+calgF:1.36e-05
+calF:2.99e-05
 update:4.6e-06
-search:0.001077
-init:0.0034503
-solve:0.0258667
-presolve:0.0056304
-total_time_cost = 0.03607
+search:0.0015449
+init:0.0033933
+total_time_cost = 0.032414
 status = DONE tgt = 50 |F(x_k)| = 5.56168e-06
 executable finished
 
 
 try data/data_matlab/nug06
-total_wall_time_cost = 0.208749
-calgF:4.65e-05
-calF:4.95e-05
-update:5.7e-06
-search:0.0078772
-init:0.018604
-solve:0.151004
-presolve:0.0311126
-total_time_cost = 0.2087
+total_wall_time_cost = 0.180053
+solve:0.153803
+calgF:5.1e-05
+calF:5.26e-05
+update:6.4e-06
+search:0.0081071
+init:0.0179704
+total_time_cost = 0.17999
 status = DONE tgt = 86 |F(x_k)| = 6.75056e-06
 executable finished
 
 
 try data/data_matlab/nug07
-total_wall_time_cost = 1.09917
-calgF:0.0003123
-calF:0.0001212
-update:2.93e-05
-search:0.0384447
-init:0.0679889
-solve:0.87019
-presolve:0.121976
-total_time_cost = 1.09906
+total_wall_time_cost = 1.01294
+solve:0.905389
+calgF:0.0002977
+calF:0.0001485
+update:1.46e-05
+search:0.0383849
+init:0.0685788
+total_time_cost = 1.01281
 status = DONE tgt = 148 |F(x_k)| = 3.3953e-06
 executable finished
 
 
 try data/data_matlab/recipe
-total_wall_time_cost = 0.0033496
-calgF:1.48e-05
-calF:3.09e-05
+total_wall_time_cost = 0.0038492
+presolve:0.0007276
+solve:0.0012608
+calgF:2.06e-05
+calF:3.69e-05
 update:7.8e-06
-search:0.0007238
-init:0.0004709
-solve:0.001198
-presolve:0.0008631
-total_time_cost = 0.0033093
-status = UNBOUNDED tgt = -1.75389e+31 |F(x_k)| = 5.17914e+16
+search:0.0011016
+init:0.000638
+total_time_cost = 0.0037933
+status = UNBOUNDED tgt = -1.8e-05 |F(x_k)| = 0.000907221
 executable finished
 
 
 try data/data_matlab/sc105
-total_wall_time_cost = 0.0046666
-calgF:1.12e-05
-calF:1.96e-05
-update:5.4e-06
-search:0.000452
-init:0.0005475
-solve:0.000971
-presolve:0.0026302
-total_time_cost = 0.0046369
+total_wall_time_cost = 0.0031908
+solve:0.0011978
+calgF:2.88e-05
+calF:2.44e-05
+update:5.5e-06
+search:0.0009235
+init:0.0009475
+total_time_cost = 0.0031275
 status = DONE tgt = -52.2021 |F(x_k)| = 5.44631e-06
 executable finished
 
 
 try data/data_matlab/sc205
-total_wall_time_cost = 0.0190926
-calgF:2.86e-05
-calF:4.59e-05
-update:8.7e-06
-search:0.0036147
-init:0.0033837
-solve:0.0025361
-presolve:0.0094218
-total_time_cost = 0.0190395
+total_wall_time_cost = 0.0121313
+solve:0.0028332
+calgF:3.43e-05
+calF:6.66e-05
+update:9.5e-06
+search:0.0048252
+init:0.0042461
+total_time_cost = 0.0120149
 status = DONE tgt = -52.2021 |F(x_k)| = 3.20755e-06
 executable finished
 
 
 try data/data_matlab/sc50a
-total_wall_time_cost = 0.0027169
-calgF:7.6e-06
-calF:1.31e-05
-update:2.04e-05
-search:0.0002109
-init:0.0002788
-solve:0.0007217
-presolve:0.0014203
-total_time_cost = 0.0026728
+total_wall_time_cost = 0.001392
+solve:0.0007052
+calgF:8.1e-06
+calF:1.66e-05
+update:5.3e-06
+search:0.0002118
+init:0.0003871
+total_time_cost = 0.0013341
 status = DONE tgt = -64.5751 |F(x_k)| = 2.23133e-06
 executable finished
 
 
 try data/data_matlab/sc50b
-total_wall_time_cost = 0.0029735
-calgF:1.41e-05
-calF:4.14e-05
-update:1.01e-05
-search:0.0003453
-init:0.0002537
-solve:0.0010095
-presolve:0.0012392
-total_time_cost = 0.0029133
+total_wall_time_cost = 0.0016832
+solve:0.0008704
+calgF:2.71e-05
+calF:2.44e-05
+update:8.6e-06
+search:0.0002625
+init:0.000427
+total_time_cost = 0.00162
 status = DONE tgt = -70 |F(x_k)| = 9.32647e-06
 executable finished
 
 
 try data/data_matlab/scagr25
-total_wall_time_cost = 0.121607
-calgF:0.0002503
-calF:0.0001374
-update:2.16e-05
-search:0.0408502
-init:0.0300102
-solve:0.0087757
-presolve:0.0414423
-total_time_cost = 0.121488
+total_wall_time_cost = 0.0837083
+solve:0.0099806
+calgF:0.0002767
+calF:0.0001407
+update:2.39e-05
+search:0.045952
+init:0.0272041
+total_time_cost = 0.083578
 status = DONE tgt = -1.47534e+07 |F(x_k)| = 2.78454e-06
 executable finished
 
 
 try data/data_matlab/scagr7
-total_wall_time_cost = 0.0072371
-calgF:1.9e-05
-calF:4e-05
-update:8e-06
-search:0.0012347
-init:0.0009699
-solve:0.0024871
-presolve:0.0024115
-total_time_cost = 0.0071702
+total_wall_time_cost = 0.0061976
+solve:0.0030113
+calgF:3.64e-05
+calF:4.96e-05
+update:1.02e-05
+search:0.0015963
+init:0.0014026
+total_time_cost = 0.0061064
 status = DONE tgt = -2.33139e+06 |F(x_k)| = 4.0766e-06
 executable finished
 
 
 try data/data_matlab/scfxm1
-total_wall_time_cost = 0.0887043
-calgF:0.0001531
-calF:0.0002433
-update:1.83e-05
-search:0.0224101
-init:0.0110709
-solve:0.0165023
-presolve:0.0382097
-total_time_cost = 0.0886077
+total_wall_time_cost = 0.0569111
+solve:0.0168296
+calgF:0.000191
+calF:0.0002706
+update:2.02e-05
+search:0.0277449
+init:0.0117378
+total_time_cost = 0.0567941
 status = DONE tgt = 18416.8 |F(x_k)| = 3.30623e-06
 executable finished
 
 
 try data/data_matlab/scorpion
-total_wall_time_cost = 0.592985
-calgF:7.96e-05
-calF:7.3e-05
-update:1.26e-05
-search:0.0118465
-init:0.0169809
-solve:0.299152
-presolve:0.264763
-total_time_cost = 0.592907
+total_wall_time_cost = 0.351981
+solve:0.320351
+calgF:9.07e-05
+calF:7.54e-05
+update:1.17e-05
+search:0.0133498
+init:0.0179924
+total_time_cost = 0.351871
 status = DONE tgt = 1878.12 |F(x_k)| = 4.92952e-06
 executable finished
 
 
 try data/data_matlab/scsd1
-total_wall_time_cost = 0.0193012
-calgF:0.0001256
-calF:9.69e-05
-update:8.9e-06
-search:0.0135714
-init:0.0006236
-solve:0.0025413
-presolve:0.0022673
-total_time_cost = 0.019235
+total_wall_time_cost = 0.017074
+solve:0.0024872
+calgF:0.000126
+calF:8.08e-05
+update:7.7e-06
+search:0.0134886
+init:0.0008291
+total_time_cost = 0.0170194
 status = DONE tgt = 8.6667 |F(x_k)| = 2.17076e-06
 executable finished
 
 
 try data/data_matlab/sctap1
-total_wall_time_cost = 0.0696568
-calgF:0.0001773
-calF:0.0001194
-update:1.76e-05
-search:0.0209931
-init:0.0080417
-solve:0.0078749
-presolve:0.0323397
-total_time_cost = 0.0695637
+total_wall_time_cost = 0.0385626
+solve:0.0079182
+calgF:0.0001803
+calF:0.0001189
+update:1.68e-05
+search:0.0218172
+init:0.0084124
+total_time_cost = 0.0384638
 status = DONE tgt = 1412.25 |F(x_k)| = 5.64959e-06
 executable finished
 
 
 try data/data_matlab/share1b
-total_wall_time_cost = 0.0183784
-calgF:6.36e-05
-calF:0.0001359
-update:1.61e-05
-search:0.0033697
-init:0.0008651
-solve:0.0063671
-presolve:0.0074636
-total_time_cost = 0.0182811
+total_wall_time_cost = 0.0105009
+solve:0.0061269
+calgF:4.59e-05
+calF:0.0001319
+update:1.62e-05
+search:0.0030057
+init:0.0010723
+total_time_cost = 0.0103989
 status = DONE tgt = -76589.3 |F(x_k)| = 5.58772e-06
 executable finished
 
 
 try data/data_matlab/share2b
-total_wall_time_cost = 0.0060702
-calgF:1.49e-05
-calF:3.83e-05
-update:7.2e-06
-search:0.0005335
-init:0.0005435
-solve:0.001969
-presolve:0.0029212
-total_time_cost = 0.0060276
+total_wall_time_cost = 0.0036898
+solve:0.0021818
+calgF:1.61e-05
+calF:4.05e-05
+update:7.6e-06
+search:0.0006461
+init:0.0007438
+total_time_cost = 0.0036359
 status = DONE tgt = -415.732 |F(x_k)| = 6.3169e-06
 executable finished
 
 
 try data/data_matlab/stocfor1
-total_wall_time_cost = 0.0068261
-calgF:8.6e-06
-calF:1.45e-05
-update:1.82e-05
-search:0.0007073
-init:0.0008665
-solve:0.001199
-presolve:0.0039901
-total_time_cost = 0.0068042
-status = UNBOUNDED tgt = -28736.5 |F(x_k)| = 106.963
+total_wall_time_cost = 0.0068688
+presolve:0.0037735
+solve:0.0012321
+calgF:7.3e-06
+calF:1.65e-05
+update:3.2e-06
+search:0.0007308
+init:0.0010741
+total_time_cost = 0.0068375
+status = UNBOUNDED tgt = -23650.8 |F(x_k)| = 5.26271e-06
 executable finished
 
 
 try data/data_matlab/vtp_base
-total_wall_time_cost = 0.0509138
-calgF:9.19e-05
-calF:0.0002235
-update:3.41e-05
-search:0.0085377
-init:0.0031098
-solve:0.0205113
-presolve:0.0182255
-total_time_cost = 0.0507338
+total_wall_time_cost = 0.0357875
+solve:0.0203749
+calgF:0.0001006
+calF:0.0002205
+update:4.91e-05
+search:0.0110324
+init:0.0038099
+total_time_cost = 0.0355874
 status = DONE tgt = 11120.7 |F(x_k)| = 1.37387e-06
 executable finished
 
