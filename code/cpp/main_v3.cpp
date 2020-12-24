@@ -224,7 +224,8 @@ template <class DataType> class IPM {
             c = Mat::Zero(c.rows(), c.cols());
             auto presolve_status = solve(false, true);
             c = c_real;
-            if (presolve_status != DONE) { status = VIOLATED; }
+            // cout << "presolve_status = " << status_str[presolve_status] << "\n";
+            if (presolve_status > HARD) { status = VIOLATED; }
         }
         TIMER_RECORD(presolve);
 
