@@ -1,230 +1,286 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import style
-from dataset import *
-import time
+from enum import Enum
+import scipy.sparse as ss
+import scipy.linalg as sl
 import os
-import glob
-style.use("ggplot")
+import time
+import argparse
 
 
-def IPM(A, b, c, detail=False):
-    def f_primal(x):
-        return c.T.dot(x)
+class IPM:
+    class Mat(np.ndarray):
+        '''
+        mxn
+        '''
+    class Vec(np.ndarray):
+        '''
+        mx1
+        '''
 
-    def F(x, lam, s):
+    max_iterations = 500
+    eps = 1e-9
+    terminal = 1e-6
+    gamma = 0.9
+    c1 = 1e-4
+
+    alpha_p = None
+    alpha_d = None
+
+    class Status(Enum):
+        TBD = 0
+        DONE = 1
+        HARD = 2
+        EXPIRED = 3
+        UNBOUNDED = 4
+        VIOLATED = 5
+
+    class SD_type(Enum):
+        LLT = 0
+        LS = 1
+
+    def read_file(self, path: str) -> np.ndarray:
+        mat = np.loadtxt(path, delimiter=",", ndmin=2)
+        return mat
+
+    def f_primal(self, x: Vec) -> float:
+        return (x.T@self.c).item()
+
+    def F(self, x: Vec, lam: Vec, s: Vec) -> Vec:
         return np.vstack((
-            A.T.dot(lam)+s-c,
-            A.dot(x)-b,
-            np.multiply(x, s)
+            self.A.T@lam+s-self.c,
+            self.A@x - self.b,
+            x*s
         ))
 
-    def gF(x, lam, s):
-        g = np.zeros((n*2+m, n*2+m))
-        g[0:n, n:n+m] = A.T
-        g[n:n+m, 0:n] = A
-        g[n+m:n+m+n, 0:n] = np.identity(n)
-        g[0:n, n+m:n+m+n] = np.diag(s.flat)
-        g[n+m:n+m+n, n+m:n+m+n] = np.diag(x.flat)
-        return g
+    def gF(self, x: Vec, lam: Vec, s: Vec) -> None:
+        m, n = self.m, self.n
+        for i in range(n):
+            self.gF_k[i, n+m+i] = s[i, 0]
+            self.gF_k[n+m+i, n+m+i] = x[i, 0]
 
-    def init_iterate():
-        AAT = A.dot(A.T)
-        x_0 = A.T.dot(np.linalg.pinv(AAT).dot(b))
-        lam_0 = np.linalg.pinv(AAT).dot(A.dot(c))
-        s_0 = c-A.T.dot(lam_0)
+    def init_iterate(self) -> (Vec, Vec, Vec):
+        AATinv = np.linalg.pinv(self.A_dense@self.A_dense.T)
+        x_0 = self.A.T@(AATinv@self.b)
+        lam_0 = AATinv@(self.A@self.c)
+        s_0 = self.c - self.A.T@lam_0
+        d_x = max(-np.min(x_0), 0)
+        d_s = max(-np.min(s_0), 0)
+        x_0 += d_x
+        s_0 += d_s
 
-        d_x, d_s = max(-np.min(x_0), 0), max(-np.min(s_0), 0)
-        x_0 = x_0+d_x
-        s_0 = s_0+d_s
-
-        u = 0.1
-        dh_x, dh_s = max(x_0.T.dot(s_0)/(np.sum(s_0)+u)*u, u), max(x_0.T.dot(s_0)/np.sum(x_0+u)*u, u)
-        x_0 = x_0+dh_x
-        s_0 = s_0+dh_s
+        u = 1
+        x_dot_s = (x_0.T@s_0).item()
+        dh_x = x_dot_s / (s_0.sum()+self.eps) * u+self.eps
+        dh_s = x_dot_s / (x_0.sum()+self.eps) * u+self.eps
+        x_0 += dh_x
+        s_0 += dh_s
         return x_0, lam_0, s_0
 
-    time_cost = {
-        "init": 0,
-        "gF&F": 0,
-        "solve": 0,
-        "line": 0,
-        "update": 0
-    }
-    start = time.time()
-    status = None
+    def enforce_fullrank(self, A: Mat, b: Vec) -> (Mat, Vec):
+        Araw = A.copy()
+        AT = A.T
+        nrows, ncols = AT.shape
+        ind_index = []
+        leadi = 0
+        leadj = 0
+        while leadi < nrows and leadj < ncols:
+            max_index = leadi
+            for r in range(leadi+1, nrows):
+                if (abs(AT[r, leadj]) > abs(AT[max_index, leadj])):
+                    max_index = r
+            if (AT[max_index, leadj] == 0):
+                leadi -= 1
+                continue
 
-    rank = np.linalg.matrix_rank(A)
-    if rank < A.shape[0]:
-        print("WARNING: not full rank", rank, "<", A.shape[0])
+            AT[[leadi, max_index], :] = AT[[max_index, leadi], :]
+            ind_index.append(leadj)
+            AT[leadi] /= AT[leadi, leadj]
+            for r in range(leadi+1, nrows):
+                d = AT[leadi, leadj]
+                m = AT[r, leadj] / d
+                AT[r] -= AT[leadi] * m
+            leadi += 1
+            leadj += 1
+        A_t = np.zeros((len(ind_index), A.shape[1]))
+        b_t = np.zeros((len(ind_index), b.shape[1]))
+        for i in range(len(ind_index)):
+            A_t[i] = Araw[ind_index[i]]
+            b_t[i] = b[ind_index[i]]
+        return A_t, b_t
 
-    m, n = A.shape
-    x_k = np.random.random((n, 1))
-    lam_k = np.random.random((m, 1))
-    s_k = np.random.random((n, 1))
-    x_k, lam_k, s_k = init_iterate()
+    def init(self, A_r: Mat, b_r: Vec, c: Vec) -> None:
+        A, b = self.enforce_fullrank(A_r, b_r)
 
-    eps = 1e-9
-    gamma = 0.1
-    c1 = 0.9
+        self.A = ss.csr_matrix(A)
+        self.A_dense = A
+        self.b = b
+        self.c = c
+        self.m, self.n = A.shape
+        m, n = self.m, self.n
 
-    time_cost["init"] += time.time()-start
+        self.gF_k = np.zeros((n+m+n, n+m+n))
+        self.gF_k[0:n, n:n+m] = A.T
+        self.gF_k[n:n+m, 0:n] = A
+        self.gF_k[n+m:n+m+n, 0:n] = np.identity(n)
 
-    F_k = F(x_k, lam_k, s_k)
-    if detail:
-        print(
-            "k=  -1",
-            "f(x)={:5.2f},".format(f_primal(x_k).item()),
-            "|F(x)_d|= {:5.6e},".format(np.linalg.norm(F_k[0:n], np.inf)),
-            "|F(x)_p|= {:5.6e},".format(np.linalg.norm(F_k[n:n+m], np.inf)),
-            "|F(x)_0|= {:5.6e},".format(np.linalg.norm(F_k[n+m:n+m+n], np.inf)),
-        )
-        old_dz_k = np.zeros((n+m+n, 1))
+    def solve_newton(self, F_d: Vec, F_p: Vec,
+                     F_0: Vec, first: bool) -> (Vec, Vec, Vec):
+        if (first):
+            self.XS_inv = np.diag((self.x_k/self.s_k).flat)
+            AXS_inv = self.A@self.XS_inv
+            self.AXS_invAT = AXS_inv@self.A.T
+            self.rhs_0 = -F_p - AXS_inv@F_d
 
-    for k in range(5000):
-        start = time.time()
-        gF_k = gF(x_k, lam_k, s_k)
-        F_k = F(x_k, lam_k, s_k)
+            try:
+                self.L = sl.cholesky(self.AXS_invAT, lower=True)
+            except:
+                self.L = None
 
-        time_cost["gF&F"] += time.time()-start
-        start = time.time()
+        S_invF_0 = F_0/self.s_k
+        if self.L is not None:
+            dlam_k = sl.cho_solve((self.L, True), self.rhs_0+self.A@S_invF_0)
+        else:
+            dlam_k = np.linalg.lstsq(self.AXS_invAT, self.rhs_0+self.A@S_invF_0, rcond=-1)[0]
 
-        mu = x_k.T.dot(s_k)
-        sigma = 0.01
-        toler = mu*sigma/n
-        # if False:
-        #     rhs=-F_k
-        #     rhs[n+m:n+m+n] += toler
+        ds_k = -F_d - self.A.T @ dlam_k
+        dx_k = -S_invF_0 - self.XS_inv @ ds_k
+        return dx_k, dlam_k, ds_k
 
-        #     dz_k, resdual, rank, singular=np.linalg.lstsq(gF_k.T, rhs)
-        #     dx_k=dz_k[0:n]
-        #     dlam_k=dz_k[n:n+m]
-        #     ds_k=dz_k[n+m:n+m+n]
+    def maximum_alpha(self, _k: Vec, d_k: Vec) -> float:
+        _k = _k.copy()
+        d_k = d_k.copy()
+        select = np.where(d_k >= 0)
+        _k[select] = np.inf
+        d_k[select] = -1
+        alpha = min(np.min(_k / -d_k), 1) * (1 - self.eps)
+        return alpha
 
-        F_d = F_k[0:n]
-        F_p = F_k[n:n+m]
-        F_0 = F_k[n+m:n+m+n]-toler
+    def solve(self, detail: bool = False, is_presolve: bool = False) -> Status:
+        total_start_time = time.time()
+        status = self.Status.TBD
+        m, n = self.m, self.n
 
-        XS_inv = np.diag((x_k/s_k).flat)
-        S_invF_0 = F_0/s_k
-        AXS_inv = A.dot(XS_inv)
-        dlam_k, _, _, _ = np.linalg.lstsq(AXS_inv.dot(A.T), -F_p-AXS_inv.dot(F_d)+A.dot(S_invF_0), rcond=None)
-        ds_k = -F_d-A.T.dot(dlam_k)
-        dx_k = -S_invF_0-XS_inv.dot(ds_k)
+        self.x_k, self.lam_k, self.s_k = self.init_iterate()
 
-        # p1_y, _, _, _ = np.linalg.lstsq(AXS_inv.dot(A.T), -b , rcond=None)
-        # p1_s = -A.T.dot(p1_y)
-        # p1_x = x_k-XS_inv.dot(p1_s)
-        # p2_y, _, _, _ = np.linalg.lstsq(AXS_inv.dot(A.T), -A.dot(1/s_k) , rcond=None)
-        # p2_s = -A.T.dot(p2_y)
-        # p2_x = 1/s_k-XS_inv.dot(p2_s)
+        for k in range(1, self.max_iterations+1):
+            F_k = self.F(self.x_k, self.lam_k, self.s_k)
+            self.gF(self.x_k, self.lam_k, self.s_k)
 
-        # ds_k = p2_s*toler - p1_s
-        # dx_k = p2_x*toler - p1_x
-        # dlam_k = p2_y*toler - p1_y
+            F_d = F_k[0:n]
+            F_p = F_k[n:n+m]
+            F_0 = F_k[n+m:n+m+n]
 
+            dx_k, dlam_k, ds_k = self.solve_newton(F_d, F_p, F_0, True)
 
+            alpha_p = self.maximum_alpha(self.x_k, dx_k)
+            alpha_d = self.maximum_alpha(self.s_k, ds_k)
 
-        dz_k = np.vstack((dx_k, dlam_k, ds_k))
-        time_cost["solve"] += time.time()-start
-        start = time.time()
+            mu = (self.x_k.T@self.s_k).item() / n
+            sigma = ((self.x_k+alpha_p*dx_k).T@(self.s_k+alpha_d*ds_k)).item() / n / mu
+            toler = mu*sigma / n
 
-        alpha = 1
+            F_d = F_k[0:n]
+            F_p = F_k[n:n+m]
+            F_0 = F_k[n+m:n+m+n] - toler
+            dx_k, dlam_k, ds_k = self.solve_newton(F_d, F_p, F_0, False)
 
-        alpha = min(min(np.min((-x_k/dx_k)[np.where(dx_k < 0)]), np.min((-s_k/ds_k)[np.where(ds_k < 0)]))*0.9, 1)
+            alpha_p = self.maximum_alpha(self.x_k, dx_k)
+            alpha_d = self.maximum_alpha(self.s_k, ds_k)
 
-        alpha_t = alpha
+            while (np.max((self.x_k+alpha_p*dx_k) *
+                          (self.s_k+alpha_d*ds_k))) <= self.gamma * mu:
+                alpha_p *= self.gamma
+                alpha_d *= self.gamma
+                if (alpha_d < self.eps**2 and alpha_p < self.eps**2):
+                    break
 
-        # while np.linalg.norm(F(x_k+alpha*dx_k, lam_k+alpha*dlam_k, s_k+alpha*ds_k), np.inf) >= np.linalg.norm(F_k+c1*alpha*gF_k.T.dot(dz_k), np.inf):
-        #     alpha *= gamma
-        #     if alpha*gamma == 0:
-        #         print("WARNING: alpha=0")
-        #         break
-        #     if (x_k+alpha*dx_k).T.dot(s_k+alpha*ds_k) < 0.1*mu:
-        #         print("WARNING: too small")
-        #         break
+            dz_k = np.vstack((alpha_p * dx_k, alpha_d * dlam_k, alpha_d * ds_k))
+            desc = self.c1 * self.gF_k.T * dz_k
 
-        while True:
-            alpha *= gamma
-            if alpha*gamma == 0:
-                print("WARNING: alpha=0")
+            while (np.linalg.norm(self.F(self.x_k+alpha_p * dx_k, self.lam_k+alpha_d * dlam_k,
+                                         self.s_k+alpha_d * ds_k), np.inf) >=
+                   np.linalg.norm((F_k+desc), np.inf)):
+                alpha_p *= self.gamma
+                alpha_d *= self.gamma
+                desc *= self.gamma
+                if (alpha_d < self.eps**2 and alpha_p < self.eps**2):
+                    break
+
+            if (detail):
+                print("k=%3d,"
+                      "f(x)=%5.6f,"
+                      "|dx|=%.3e,"
+                      "|dlam|=%.3e,"
+                      "|ds|=%.3e,"
+                      "|F(x)_d|=%.3e,"
+                      "|F(x)_p|=%.3e,"
+                      "|F(x)_0|=%.3e,"
+                      "alpha_p=%.3e,"
+                      "alpha_d=%.3e,"
+                      "" %
+                      (k, self.f_primal(self.x_k), np.linalg.norm(dx_k, np.inf),
+                       np.linalg.norm(dlam_k, np.inf),
+                       np.linalg.norm(ds_k, np.inf),
+                       np.linalg.norm(F_d, np.inf),
+                       np.linalg.norm(F_p, np.inf),
+                       np.linalg.norm(F_0, np.inf), alpha_p, alpha_d))
+
+            if (np.linalg.norm(F_k, np.inf) < self.terminal):
+                status = self.Status.DONE
                 break
-            if (x_k+alpha*dx_k).T.dot(s_k+alpha*ds_k) < 0.1*mu:
-                print("WARNING: too small")
+
+            if (np.linalg.norm(dz_k, np.inf) > 1e31):
+                status = self.Status.UNBOUNDED
+                break
+            if (np.linalg.norm((alpha_p * dx_k), np.inf) < self.eps and
+                    np.linalg.norm((alpha_d * ds_k), np.inf) < self.eps):
+                if (np.linalg.norm(F_k, np.inf) < 1e-3):
+                    status = self.Status.HARD
+                else:
+                    status = self.Status.UNBOUNDED
                 break
 
-        time_cost["line"] += time.time()-start
-        start = time.time()
+            self.x_k += alpha_p * dx_k
+            self.lam_k += alpha_d * dlam_k
+            self.s_k += alpha_d * ds_k
 
-        x_k += alpha*dx_k
-        lam_k += alpha*dlam_k
-        s_k += alpha*ds_k
+        if (status == self.Status.TBD):
+            status = self.Status.EXPIRED
+        if (is_presolve):
+            return status
+        else:
+            if (status.value > self.Status.HARD.value):
+                c_real = self.c
+                self.c = np.zeros_like(self.c)
+                presolve_status = self.solve(False, True)
+                self.c = c_real
+                if (presolve_status.value > self.Status.HARD.value):
+                    status = self.Status.VIOLATED
 
-        time_cost["update"] += time.time()-start
-        start = time.time()
+        total_wall_time_cost = time.time()-total_start_time
 
-        if detail:
-            print(
-                "k={:3d},".format(k),
-                "f(x)= {:5.3f},".format(f_primal(x_k).item()),
-                "|dz_d|= {:5.6e},".format(np.linalg.norm(dz_k[0:n], np.inf)),
-                "|dz_p|= {:5.6e},".format(np.linalg.norm(dz_k[n:n+m], np.inf)),
-                "|dz_0|= {:5.6e},".format(np.linalg.norm(dz_k[n+m:n+m+n], np.inf)),
-                "|F(x)_d|= {:5.6e},".format(np.linalg.norm(F_k[0:n], np.inf)),
-                "|F(x)_p|= {:5.6e},".format(np.linalg.norm(F_k[n:n+m], np.inf)),
-                "|F(x)_0|= {:5.6e},".format(np.linalg.norm(F_k[n+m:n+m+n], np.inf)),
-                "alpha= {:.5e},".format(alpha),
-                "theta= {:.5e}".format(
-                    # np.linalg.norm(dz_k-old_dz_k)
-                    np.linalg.norm(alpha*dz_k)
-                )
-            )
-            old_dz_k = dz_k
-
-        if np.linalg.norm(F_k, np.inf) < eps:
-            status = "DONE"
-            break
-
-        if np.linalg.norm(dz_k, np.inf) == 0:
-            raise Exception("FAILED to solve: update delta=0")
-        if np.linalg.norm(dz_k, np.inf) > 1e31:
-            raise Exception("FAILED to solve: update delta exploded")
-        if np.linalg.norm(alpha*dz_k, np.inf) < 1e-30*eps:
-            print(np.linalg.norm(alpha*dz_k, np.inf))
-            print("WARNING: predicted cannot converge")
-            status = "HARD"
-            break
-
-    if status is None:
-        status = "EXPIRED"
-    x_k[np.where(np.abs(x_k) < eps)] = 0
-    total_time = sum([i for _, i in time_cost.items()])
-    if detail:
-        print("x =", x_k.T.tolist())
-        print(time_cost)
-        print("total time", total_time)
-
-    return x_k, f_primal(x_k).item(), np.linalg.norm(F_k, np.inf), total_time, status
+        print("total solving wall time =", total_wall_time_cost, "sec")
+        print("status                  =", status.name)
+        if (status == self.Status.DONE):
+            print("primal-dual optimal solution:")
+        print("optimal objective value = %.4f" % self.f_primal(self.x_k))
+        print("numbers of iterations   =", k)
+        return status
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("data_folder", help="a folder contain A,b,c")
+    parser.add_argument("--detail", required=False, default=False,
+                        help="show detailed information each iteration", action="store_true")
+    args = parser.parse_args()
 
-    # TIMES=1
-    # t=0
-    # for i in range(TIMES):
-    #     x, tc=IPM(A, b, c, detail=i == 0)
-    #     t += tc
-    # print("avg time", t/TIMES)
+    ipm = IPM()
+    A0 = ipm.read_file(os.path.join(args.data_folder, "A.csv"))
+    b0 = ipm.read_file(os.path.join(args.data_folder, "b.csv"))
+    c0 = ipm.read_file(os.path.join(args.data_folder, "c.csv"))
 
-    A, b, c, x_star = read_data(r"data/LP_MATLAB\beaconfd.mat")
-    x, tc, status = IPM(A, b, c, detail=True)
-    exit()
+    ipm.init(A0, b0, c0)
+    ipm.solve(args.detail)
 
-    # for path in glob.glob("data/LP_MATLAB/*.mat"):
-    #     print("try", path)
-    #     A, b, c, x_star = read_data(path)
-    #     try:
-    #         x, tgt, res, tc, status = IPM(A, b, c, detail=False)
-    #         print("\t"*4, status, tgt, res)
-    #     except Exception as e:
-    #         print(e)
+    print("solver terminated successfully")
