@@ -361,11 +361,14 @@ template <class DataType> class IPM {
         cout << "status                  = " << status_str[status] << "\n";
         if (status == DONE) {
             cout << "primal-dual optimal solution:"
-                       << "\n";
+                 << "\n";
         }
         cout << "optimal objective value = " << setprecision(6) << f_primal(x_k)
              << "\n";
         cout << "numbers of iterations   = " << total_iters << "\n";
+        if (detail)
+            cout << "solution x              = {\n"
+                 << x_k.transpose() << "\n}\n";
         // cout << "numbers of iterations   = " << F_k.template
         // lpNorm<Infinity>() << "\n";
         return status;
