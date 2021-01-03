@@ -124,13 +124,7 @@ class IPM:
         A, b = self.enforce_fullrank(A_r, b_r)
         m, n = A.shape
         if use_M:
-            M = max(np.max(np.abs(c))*n*10, 1)
-            # M = 10000000
-            # M = (np.max(np.abs(A))*np.max(np.abs(b)))**0.5*np.max(np.abs(c))*n
-            print(np.max(np.abs(A)), np.max(np.abs(b)), np.max(np.abs(c)))
-            print("M =", M)
-
-            self.M = M
+            M = max(np.max(np.abs(c))*np.mean(np.abs(b))*m, m)
 
             A = np.hstack((A, np.identity(m)))
             c = np.vstack((c, M*np.ones((m, 1))))
@@ -255,29 +249,19 @@ class IPM:
                 status = self.Status.DONE
                 break
 
-            if (np.linalg.norm(dz_k, np.inf) > 1e10):
-                status = self.Status.UNBOUNDED
-                break
-            if (np.linalg.norm((alpha_p * dx_k), np.inf) < self.eps and
-                    np.linalg.norm((alpha_d * ds_k), np.inf) < self.eps):
+            if (alpha_p < self.eps and alpha_d < self.eps):
                 stay += 1
-                if (np.linalg.norm(F_k, np.inf) < 1e-3):
-                    status = self.Status.HARD
-                else:
-                    status = self.Status.UNBOUNDED
-                break
+                if stay > 3:
+                    if (np.linalg.norm(F_k, np.inf) < 1e-3):
+                        status = self.Status.HARD
+                    elif (np.linalg.norm(dz_k, np.inf) > 1e3):
+                        status = self.Status.UNBOUNDED
+                    break
 
             self.x_k += alpha_p * dx_k
             self.lam_k += alpha_d * dlam_k
             self.s_k += alpha_d * ds_k
-            # if self.use_M:
-            # self.M = np.linalg.norm(self.x_k, np.inf)*1
-            # self.M*=0.99
-            # print(self.M)
-            # self.c[-m:] = self.M
 
-        if (status == self.Status.TBD):
-            status = self.Status.EXPIRED
         if (is_presolve):
             return status
         else:
@@ -290,8 +274,10 @@ class IPM:
                     status = self.Status.VIOLATED
 
         if self.use_M:
-            if np.linalg.norm(self.x_k[-m:], np.inf) > self.terminal:
+            if (status == self.Status.TBD or status == self.Status.DONE) and np.linalg.norm(self.x_k[-m:], np.inf) > self.terminal:
                 status = self.Status.VIOLATED
+        if (status == self.Status.TBD):
+            status = self.Status.EXPIRED
 
         total_wall_time_cost = time.time()-total_start_time
 
