@@ -17,15 +17,20 @@ class IPM:
         mx1
         '''
 
+    # several constant
     max_iterations = 500
     eps = 1e-9
     terminal = 1e-6
     gamma = 0.9
     c1 = 1e-4
 
+    # whether to use Big-M
     use_M = False
 
     class Status(Enum):
+        '''
+        Solving status.
+        '''
         TBD = 0
         DONE = 1
         HARD = 2
@@ -44,11 +49,10 @@ class IPM:
                 "infeasible"
             ][status.value]
 
-    class SD_type(Enum):
-        LLT = 0
-        LS = 1
-
     def read_file(self, path: str, required: bool = True) -> np.ndarray:
+        '''
+        Read a matrix from given path.
+        '''
         if not os.path.exists(path):
             if not required:
                 return None
@@ -58,9 +62,15 @@ class IPM:
         return mat
 
     def f_primal(self, x: Vec) -> float:
+        '''
+        Compute the objective value c^Tx.
+        '''
         return (x.T@self.c).item()
 
     def F(self, x: Vec, lam: Vec, s: Vec) -> Vec:
+        '''
+        Compute the residuals.
+        '''
         return np.vstack((
             self.A.T@lam+s-self.c,
             self.A@x - self.b,
@@ -68,12 +78,18 @@ class IPM:
         ))
 
     def gF(self, x: Vec, lam: Vec, s: Vec) -> None:
+        '''
+        Compute the gradient matrix.
+        '''
         m, n = self.m, self.n
         for i in range(n):
             self.gF_k[i, n+m+i] = s[i, 0]
             self.gF_k[n+m+i, n+m+i] = x[i, 0]
 
     def init_iterate(self) -> (Vec, Vec, Vec):
+        '''
+        Find the initial point given A,b,c.
+        '''
         AATinv = np.linalg.pinv(self.A_dense@self.A_dense.T)
         x_0 = self.A.T@(AATinv@self.b)
         lam_0 = AATinv@(self.A@self.c)
@@ -89,6 +105,9 @@ class IPM:
         return x_0, lam_0, s_0
 
     def enforce_fullrank(self, A: Mat, b: Vec) -> (Mat, Vec):
+        '''
+        Use row echelon to kick linearly dependent lines in A.
+        '''
         Araw = A.copy()
         AT = A.T
         nrows, ncols = AT.shape
@@ -121,11 +140,15 @@ class IPM:
         return A_t, b_t
 
     def init(self, A_r: Mat, b_r: Vec, c: Vec, use_M: bool) -> None:
+        '''
+        Transfer A,b,c to the solver.
+        '''
         A, b = self.enforce_fullrank(A_r, b_r)
         m, n = A.shape
-        if use_M:
-            M = max(np.max(np.abs(c))*np.mean(np.abs(b))*m, m)
 
+        if use_M:
+            # choose M
+            M = max(np.max(np.abs(c))*np.mean(np.abs(b))*m, m)
             A = np.hstack((A, np.identity(m)))
             c = np.vstack((c, M*np.ones((m, 1))))
             m, n = A.shape
@@ -137,6 +160,7 @@ class IPM:
         self.b = b
         self.c = c
 
+        # construct gradient
         self.gF_k = np.zeros((n+m+n, n+m+n))
         self.gF_k[0:n, n:n+m] = A.T
         self.gF_k[n:n+m, 0:n] = A
@@ -145,6 +169,10 @@ class IPM:
 
     def solve_newton(self, F_d: Vec, F_p: Vec,
                      F_0: Vec, first: bool) -> (Vec, Vec, Vec):
+        '''
+        Solve the updating directions given residuals.
+        More information is in the report part III.C Equation Solving.
+        '''
         if (first):
             self.XS_inv = np.diag((self.x_k/self.s_k).flat)
             AXS_inv = self.A@self.XS_inv
@@ -167,6 +195,9 @@ class IPM:
         return dx_k, dlam_k, ds_k
 
     def maximum_alpha(self, _k: Vec, d_k: Vec) -> float:
+        '''
+        Choose a feasible step size given the x/s and dx/ds.
+        '''
         _k = _k.copy()
         d_k = d_k.copy()
         select = np.where(d_k >= 0)
@@ -176,37 +207,45 @@ class IPM:
         return alpha
 
     def solve(self, args, is_presolve: bool = False, optimal: Mat = None) -> Status:
+        '''
+        Solve!
+        '''
         total_start_time = time.time()
         status = self.Status.TBD
         m, n = self.m, self.n
         stay = 0
+
+        # find initial point
         self.x_k, self.lam_k, self.s_k = self.init_iterate()
 
         for k in range(1, self.max_iterations+1):
+
+            # compute F and grad F
             F_k = self.F(self.x_k, self.lam_k, self.s_k)
             self.gF(self.x_k, self.lam_k, self.s_k)
 
+            # solve the first stage updating direction
             F_d = F_k[0:n]
             F_p = F_k[n:n+m]
             F_0 = F_k[n+m:n+m+n]
-
             dx_k, dlam_k, ds_k = self.solve_newton(F_d, F_p, F_0, True)
-
             alpha_p = self.maximum_alpha(self.x_k, dx_k)
             alpha_d = self.maximum_alpha(self.s_k, ds_k)
 
+            # compute relaxation
             mu = (self.x_k.T@self.s_k).item() / n
             sigma = (((self.x_k+alpha_p*dx_k).T@(self.s_k+alpha_d*ds_k)).item() / n / mu)**2
             toler = mu*sigma / n
 
+            # solve the second stage updating direction
             F_d = F_k[0:n]
             F_p = F_k[n:n+m]
             F_0 = F_k[n+m:n+m+n] - toler
             dx_k, dlam_k, ds_k = self.solve_newton(F_d, F_p, F_0, False)
-
             alpha_p = self.maximum_alpha(self.x_k, dx_k)
             alpha_d = self.maximum_alpha(self.s_k, ds_k)
 
+            # line search on complementary constraint
             while (np.max((self.x_k+alpha_p*dx_k) *
                           (self.s_k+alpha_d*ds_k))) <= self.gamma * mu:
                 alpha_p *= self.gamma
@@ -214,9 +253,9 @@ class IPM:
                 if (alpha_d < self.eps**2 and alpha_p < self.eps**2):
                     break
 
+            # line search of modified Armijo
             dz_k = np.vstack((alpha_p * dx_k, alpha_d * dlam_k, alpha_d * ds_k))
             desc = self.c1 * self.gF_k.T * dz_k
-
             while (np.linalg.norm(self.F(self.x_k+alpha_p * dx_k, self.lam_k+alpha_d * dlam_k,
                                          self.s_k+alpha_d * ds_k), np.inf) >=
                    np.linalg.norm((F_k+desc), np.inf)):
@@ -226,6 +265,7 @@ class IPM:
                 if (alpha_d < self.eps**2 and alpha_p < self.eps**2):
                     break
 
+            # ouput detailed message
             if (args is not None and args.detail):
                 print("k=%3d,"
                       "f(x)=%5.6f,"
@@ -245,10 +285,12 @@ class IPM:
                        np.linalg.norm(F_p, np.inf),
                        np.linalg.norm(F_0, np.inf), alpha_p, alpha_d))
 
+            # if solved
             if (np.linalg.norm(F_k, np.inf) < self.terminal):
                 status = self.Status.DONE
                 break
 
+            # if not converge
             if (alpha_p < self.eps and alpha_d < self.eps):
                 stay += 1
                 if stay > 3:
@@ -258,10 +300,12 @@ class IPM:
                         status = self.Status.UNBOUNDED
                     break
 
+            # update
             self.x_k += alpha_p * dx_k
             self.lam_k += alpha_d * dlam_k
             self.s_k += alpha_d * ds_k
 
+        # this is the part of checking whether a solution could be found when c=0
         if (is_presolve):
             return status
         else:
@@ -273,14 +317,17 @@ class IPM:
                 if (presolve_status.value > self.Status.HARD.value):
                     status = self.Status.VIOLATED
 
+        # if the solution of Big-M violates the constraint
         if self.use_M:
             if (status == self.Status.TBD or status == self.Status.DONE) and np.linalg.norm(self.x_k[-m:], np.inf) > self.terminal:
                 status = self.Status.VIOLATED
+
+        # nothing happened
         if (status == self.Status.TBD):
             status = self.Status.EXPIRED
 
+        # output necessary information
         total_wall_time_cost = time.time()-total_start_time
-
         print("total solving wall time =", total_wall_time_cost, "sec")
         print("status                  =", status.name, ":", self.Status.spec(status))
         if (status == self.Status.DONE):
@@ -302,6 +349,7 @@ class IPM:
 
 
 if __name__ == "__main__":
+    # parse argument
     parser = argparse.ArgumentParser()
     parser.add_argument("data_folder", help="a folder containing `A.csv`, `b.csv` and `c.csv` [and `x_star.csv`]")
     parser.add_argument("--detail", required=False, default=False,
@@ -312,12 +360,14 @@ if __name__ == "__main__":
                         help="use the big-M form", action="store_true")
     args = parser.parse_args()
 
+    # read data
     ipm = IPM()
     A0 = ipm.read_file(os.path.join(args.data_folder, "A.csv"))
     b0 = ipm.read_file(os.path.join(args.data_folder, "b.csv"))
     c0 = ipm.read_file(os.path.join(args.data_folder, "c.csv"))
     x0 = ipm.read_file(os.path.join(args.data_folder, "x_star.csv"), required=False)
 
+    # solve it
     ipm.init(A0, b0, c0, use_M=args.M)
     ipm.solve(args, optimal=x0)
 

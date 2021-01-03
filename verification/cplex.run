@@ -1,7 +1,0 @@
-reset;
-model cplex.mod ;
-data  data/vtp_base.dat ;
-option solver cplex;
-#option cplex_options 'baropt';
-solve;
-#display x;
